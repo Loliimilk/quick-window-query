@@ -3,8 +3,6 @@
 *.dll
 *.so
 *.dylib
-qwq
-main
 
 *.test
 *.out
@@ -20,7 +18,6 @@ main
 *.njsproj
 *.sln
 *.sw?
-*.png
 
 __pycache__
 .venv
