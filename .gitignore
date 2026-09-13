@@ -21,3 +21,6 @@ main
 *.sln
 *.sw?
 *.png
+
+__pycache__
+.venv
