@@ -26,6 +26,7 @@ class SmoothOverlay(QWidget):
         self.static_timer.setSingleShot(True)
         self.static_timer.setInterval(300) 
         self.static_timer.timeout.connect(self.send_bounds_to_go)
+        QTimer.singleShot(100, self.send_bounds_to_go)
 
     def paintEvent(self, event):
         painter = QPainter(self)
