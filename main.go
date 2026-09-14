@@ -34,9 +34,8 @@ var (
 	hasCustomRect bool
 )
 
-func Screen(ctx context.Context, monitor int, ch chan<- []byte) {
+func Screen(ctx context.Context, ch chan<- []byte) {
 	enc := png.Encoder{CompressionLevel: png.BestSpeed}
-	defaultBounds := screenshot.GetDisplayBounds(monitor - 1)
 
 	for {
 		select {
@@ -47,19 +46,16 @@ func Screen(ctx context.Context, monitor int, ch chan<- []byte) {
 		}
 
 		mu.Lock()
-		var captureRect image.Rectangle
-		if hasCustomRect {
-			captureRect = customBounds
-		} else {
-			captureRect = defaultBounds
-		}
+		active := hasCustomRect
+		rect := customBounds
 		mu.Unlock()
 
-		if captureRect.Dx() <= 0 || captureRect.Dy() <= 0 {
-			captureRect = defaultBounds
+		if !active {
+			time.Sleep(100 * time.Millisecond)
+			continue
 		}
 
-		img, err := screenshot.CaptureRect(captureRect)
+		img, err := screenshot.CaptureRect(rect)
 		if err != nil {
 			time.Sleep(200 * time.Millisecond)
 			continue
@@ -67,7 +63,6 @@ func Screen(ctx context.Context, monitor int, ch chan<- []byte) {
 
 		var buf bytes.Buffer
 		if err := enc.Encode(&buf, img); err != nil {
-			fmt.Println("encode error:", err)
 			continue
 		}
 
@@ -102,13 +97,9 @@ func sendFrame(ctx context.Context, client *http.Client, frame []byte) ([]byte, 
 		return Body, fmt.Errorf("server returned %d: %s", resp.StatusCode, Body)
 	}
 	return Body, nil
-}
 
+}
 func updateBounds(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
 
 	var b Bounds
 	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
@@ -133,13 +124,6 @@ func updateBounds(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("QwQ: Quick Window Query started!")
 
-	var monitor int
-	fmt.Printf("What monitor? (1..%d): ", screenshot.NumActiveDisplays())
-	_, _ = fmt.Scanln(&monitor)
-	if monitor < 1 || monitor > screenshot.NumActiveDisplays() {
-		monitor = 1
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -152,7 +136,7 @@ func main() {
 	}()
 
 	frames := make(chan []byte)
-	go Screen(ctx, monitor, frames)
+	go Screen(ctx, frames)
 
 	client := &http.Client{
 		Timeout: 30 * time.Second,
@@ -160,22 +144,12 @@ func main() {
 			DisableKeepAlives: true,
 		},
 	}
-
 	mux := http.NewServeMux()
 	mux.HandleFunc("/update-bounds", updateBounds)
 
-	server := &http.Server{
-		Addr:         ":8080",
-		Handler:      mux,
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
-	}
-
 	go func() {
-		log.Println("Go server запущен на http://localhost:8080")
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("HTTP server error: %v", err)
-		}
+		log.Println("Сервер запущен на :8080")
+		_ = http.ListenAndServe(":8080", mux)
 	}()
 
 	for {
@@ -188,6 +162,8 @@ func main() {
 			resp, err := sendFrame(ctx, client, frame)
 			dt := time.Since(t0)
 			if err != nil {
+				fmt.Printf("send error %v:%v", dt, err)
+				time.Sleep(2 * time.Second)
 				continue
 			}
 			fmt.Printf("frame %d bytes -> %d bytes resp in %v: %s\n",
