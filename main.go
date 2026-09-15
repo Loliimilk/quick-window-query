@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"image"
@@ -36,6 +37,7 @@ var (
 
 func Screen(ctx context.Context, ch chan<- []byte) {
 	enc := png.Encoder{CompressionLevel: png.BestSpeed}
+	var lastHash [16]byte
 
 	for {
 		select {
@@ -60,6 +62,14 @@ func Screen(ctx context.Context, ch chan<- []byte) {
 			time.Sleep(200 * time.Millisecond)
 			continue
 		}
+
+		currentHash := md5.Sum(img.Pix)
+		if currentHash == lastHash {
+			time.Sleep(50 * time.Millisecond)
+			continue
+		}
+
+		lastHash = currentHash
 
 		var buf bytes.Buffer
 		if err := enc.Encode(&buf, img); err != nil {
