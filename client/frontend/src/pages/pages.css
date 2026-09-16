@@ -1,0 +1,10 @@
+
+.content {
+  flex: 1;
+  height: 100vh;
+  overflow: auto;
+
+  background-color: rgb(65, 65, 65);
+  color: white;
+  padding: 10px;
+}
