@@ -1,0 +1,36 @@
+
+
+.ocr-text{
+    background-color: rgb(255, 250, 242);
+    width: 600px;
+    height: 100px;
+    padding: 20px;
+    margin: 80px;
+
+    border-radius: 20px;
+    border: rgb(241, 163, 163) solid 3px;
+    color: black;
+}
+.default-text{
+    font-family: 'Montserrat', 'Inter', sans-serif;
+    font-size: 2.2rem;
+    text-align: center;
+    margin: 25px;
+    /* font-weight: 300; */
+}
+.verb-text{
+    font-family: 'Montserrat', 'Inter', sans-serif;
+    text-align: center;
+    margin: -20px;
+}
+
+.btn-get-frame{
+    background-color: rgb(241, 163, 163);
+    border: rgb(112, 68, 68) solid 2px;
+    padding: 13px;
+    border-radius: 30px;
+
+    position: relative;
+    bottom: 100px;
+    left: 700px;
+}
