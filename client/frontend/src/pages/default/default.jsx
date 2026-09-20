@@ -1,112 +1,117 @@
+import React, { useState } from 'react'
 import './default.css'
+import data from './phrase.json'
 
-var phrase = "My first impression of him was that he's not one to smile. After meeting him again more recently, however, he's still as reserved as ever, but... he seems a lot more relaxed now. Maybe he... met someone special."
-var schem = "It + V + Obj + Inf, Pronoun + V + Adj + Inf, Noun Phrase"
-var words = []
-for (var word of phrase.split(" ")){
-    words.push(word)
+const categories = {
+  tense:        { color: "#B3A5DE", label: "Время" },
+  structure:    { color: "#96C0D6", label: "Структура" },
+  idiom:        { color: "#E7AC7E", label: "Идиома" },
+  word_order:   { color: "#ACCE9C", label: "Порядок слов" },
+  false_friend: { color: "#E29A96", label: "Ложный друг" },
+  articles:     { color: "#D9BE7E", label: "Артикли" },
+  prepositions: { color: "#8FCFC5", label: "Предлоги" },
+  modality:     { color: "#D79FC4", label: "Модальность" }
 }
 
-function Default(){
-    return(
-        <>
-        <div className="pages">
-            <div className='main-elements'>
-            <div className="ocr-text">
-                <div className='default-text'>
-                    {
-                        words.map((word, i) => (
-                            <span 
-                                key={i} 
-                                className="word"
-                                onClick={() => console.log(word)}>
-                                    {word + " "}
-                            </span>
-                        )
-                    )
-                    }
-                </div>
-                {/* <p className='default-text'>{words}</p> */}
-                {/* <p className='verb-text'>It pains me to + V</p> */}
-            </div>
+function Highlight({ text, color, category, isHovered, onEnter, onLeave }) {
+  return (
+    <span
+      className={`colored ${isHovered ? 'hovered' : ''}`}
+      data-category={category}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      style={{ '--accent-color': color }}
+    >
+      {text}
+    </span>
+  )
+}
 
-            <div className='explanations'>
-                <div className='explanation'>
-                    <div className='sentences'>
-                        <p className='sentence'>
-                            My first impression of him 
-                            <span style={{ 
-                                color: '#B3A5DE',
-                                display: 'inline-block',
-                                padding: '0 0.2em 0.06em',
-                                borderBottom: '2px solid #B3A5DE',
-                                borderRadius: '0.35em',
-                                lineHeight: 1.4,
-                                textDecoration: 'none' 
-                            }}>was</span>  
-                        that <span style={{ 
-                                color: '#B3A5DE',
-                                display: 'inline-block',
-                                padding: '0 0.2em 0.06em',
-                                borderBottom: '2px solid #B3A5DE',
-                                borderRadius: '0.35em',
-                                lineHeight: 1.4,
-                                textDecoration: 'none' 
-                            }}>he's not one to smile</span> 
-                        </p>
-                        <p className='sentence-translation'>
-                            Моё первое впечатление о нём было, что он не из тех, кто улыбается.
-                        </p>
-                    </div>
-                    <div className='grammars'>
-                        <p className='Category' style={{ color: '#B3A5DE' }} >Время</p>
-                        <p className='gramar'>
-                            Главное предложение в прошедшем (was), но придаточное осталось в настоящем (he's), а не «he wasn't». Так бывает, когда описанная черта всё ещё верна сейчас. Если бы она перестала быть актуальной, время сдвинулось бы: «...was that he wasn't one to smile».
-                        </p>
-                    </div>
-                </div>
+function SentenceBlock({ sentence }) {
+  const [hoveredId, setHoveredId] = useState(null)
+  const metaOf = (category) => categories[category] ?? { color: '#999', label: category }
 
-                                <div className='explanation'>
-                    <div className='sentences'>
-                        <p className='sentence'>
-                            My first impression of him 
-                            <span style={{ 
-                                color: '#B3A5DE',
-                                display: 'inline-block',
-                                padding: '0 0.2em 0.06em',
-                                borderBottom: '2px solid #B3A5DE',
-                                borderRadius: '0.35em',
-                                lineHeight: 1.4,
-                                textDecoration: 'none' 
-                            }}>was</span>  
-                        that <span style={{ 
-                                color: '#B3A5DE',
-                                display: 'inline-block',
-                                padding: '0 0.2em 0.06em',
-                                borderBottom: '2px solid #B3A5DE',
-                                borderRadius: '0.35em',
-                                lineHeight: 1.4,
-                                textDecoration: 'none' 
-                            }}>he's not one to smile</span> 
-                        </p>
-                        <p className='sentence-translation'>
-                            Моё первое впечатление о нём было, что он не из тех, кто улыбается.
-                        </p>
-                    </div>
-                    <div className='grammars'>
-                        <p className='Category' style={{ color: '#B3A5DE' }} >Время</p>
-                        <p className='gramar'>
-                            Главное предложение в прошедшем (was), но придаточное осталось в настоящем (he's), а не «he wasn't». Так бывает, когда описанная черта всё ещё верна сейчас. Если бы она перестала быть актуальной, время сдвинулось бы: «...was that he wasn't one to smile».
-                        </p>
-                    </div>
-                </div>
+  const partData = {}
+  for (const c of sentence.constructions) {
+    const meta = metaOf(c.category)
+    for (const ref of c.refs) {
+      if (!partData[ref]) {
+        partData[ref] = { id: c.id, color: meta.color, category: c.category }
+      }
+    }
+  }
+
+  return (
+    <div className='explanation'>
+      <div className='sentences'>
+        <p className='sentence'>
+          {sentence.parts.map((part, i) => {
+            const data = partData[i]
+            return data
+              ? <Highlight
+                  key={i}
+                  text={part.text}
+                  color={data.color}
+                  category={data.category}
+                  isHovered={hoveredId === data.id}
+                  onEnter={() => setHoveredId(data.id)}
+                  onLeave={() => setHoveredId(null)}
+                />
+              : <span key={i}>{part.text}</span>
+          })}
+        </p>
+        <p className='sentence-translation'>{sentence.translation}</p>
+      </div>
+
+      <div className='grammars'>
+        {sentence.constructions.map(c => {
+          const meta = metaOf(c.category)
+          const isHovered = hoveredId === c.id
+          
+          return (
+            <div 
+              key={c.id} 
+              className={`grammar-item ${isHovered ? 'active' : ''}`}
+              onMouseEnter={() => setHoveredId(c.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              style={{ '--accent-color': meta.color }}
+            >
+              <p className='category-title'>{meta.label}</p>
+              <p className='grammar-desc'>{c.description}</p>
             </div>
-        </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function Default() {
+  const words = data.phrase.original.split(" ")
+
+  return (
+    <div className="pages">
+      <div className='main-elements'>
+        <div className="ocr-text">
+          <div className='default-text'>
+            {words.map((word, i) => (
+              <span key={i} className="word" onClick={() => console.log(word)}>
+                {word + " "}
+              </span>
+            ))}
+          </div>
         </div>
 
-        {/* <button className='btn-get-frame'>🔎</button> */}
-    </>
-    )
+        {/* <button className="btn-get-frame">Получить кадр</button> */}
+
+        <div className='explanations'>
+          {data.phrase.sentences.map(sentence => (
+            <SentenceBlock key={sentence.id} sentence={sentence} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default Default

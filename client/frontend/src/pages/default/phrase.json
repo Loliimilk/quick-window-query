@@ -1,0 +1,59 @@
+{
+  "phrase": {
+    "original": "My first impression of him was that he's not one to smile. After meeting him again more recently, however, he's still as reserved as ever, but... he seems a lot more relaxed now. Maybe he... met someone special.",
+    "translation": "Моё первое впечатление о нём было такое: он не из тех, кто улыбается. Однако после недавней встречи он по-прежнему сдержан, но... кажется, стал намного спокойнее. Может, он... встретил кого-то особенного.",
+    "sentences": [
+      {
+        "id": "1",
+        "translation": "Моё первое впечатление о нём было, что он не из тех, кто улыбается.",
+        "parts": [
+          { "text": "My first impression of him " },
+          { "text": "was" },
+          { "text": " that " },
+          { "text": "he's" },
+          { "text": " " },
+          { "text": "not one to smile" },
+          { "text": "." }
+        ],
+        "constructions": [
+          {
+            "id": "1-1",
+            "category": "tense",
+            "refs": [1, 3],
+            "description": "Главное предложение в прошедшем (was), но придаточное осталось в настоящем (he's), а не «he wasn't». Так бывает, когда описанная черта всё ещё верна сейчас. Если бы она перестала быть актуальной, время сдвинулось бы: «...was that he wasn't one to smile»."
+          },
+          {
+            "id": "1-2",
+            "category": "structure",
+            "refs": [5],
+            "description": "«not one to + глагол» = «не из тех, кто...». Готовая модель для черты характера: she's not one to complain, he's not one to give up."
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "translation": "Однако после недавней встречи он по-прежнему сдержан, но...",
+        "parts": [
+          { "text": "After meeting him" },
+          { "text": " again more recently, however, he's still " },
+          { "text": "as reserved as ever" },
+          { "text": ", but..." }
+        ],
+        "constructions": [
+          {
+            "id": "2-1",
+            "category": "structure",
+            "refs": [0],
+            "description": "После предлога (after, before, without, instead of) в английском идёт герундий (-ing), не личная форма глагола. По-русски это «после того как + глагол»: after meeting = после того как встретил."
+          },
+          {
+            "id": "2-2",
+            "category": "idiom",
+            "refs": [2],
+            "description": "«as + прилагательное + as ever» = «такой же ..., как и всегда/как прежде». Готовая модель: as busy as ever, as stubborn as ever."
+          }
+        ]
+      }
+    ]
+  }
+}
