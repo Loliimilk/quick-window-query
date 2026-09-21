@@ -91,24 +91,51 @@ function SentenceBlock({ sentence }) {
 }
 
 function Default() {
-  const words = data.phrase.translation.split(" ")
+  const [isOn, setIsOn] = useState(false)
+
+  const sourceLanguage = { code: "EN", name: "English" }
+  const targetLanguage = { code: "RU", name: "Russian" }
+
+  const originalWords = data.phrase.original.split(" ")
+  const translatedWords = data.phrase.translation.split(" ")
+
+  const handleToggle = () => setIsOn(prev => !prev)
+  const visibleWords = isOn ? translatedWords : originalWords
 
   return (
     <div className="pages">
-      <div className='main-elements'>
+      <div className="main-elements">
         <div className="ocr-text">
-          <div className='default-text'>
-            {words.map((word, i) => (
-              <span key={i} className="word" onClick={() => console.log(word)}>
-                {word + " "}
+          <label className="language-switch">
+            <input
+              type="checkbox"
+              checked={isOn}
+              onChange={handleToggle}
+              aria-label={`Switch between ${sourceLanguage.name} and ${targetLanguage.name}`}
+            />
+
+            <span className="language-slider">
+              <span className="language-option language-left" title={sourceLanguage.name}>
+                {sourceLanguage.code}
               </span>
-            ))}
+              <span className="language-option language-right" title={targetLanguage.name}>
+                {targetLanguage.code}
+              </span>
+            </span>
+          </label>
+
+          <div className="default-text">
+            <div key={isOn ? "translated" : "original"} className="text-inner">
+              {visibleWords.map((word, i) => (
+                <span key={`${word}-${i}`} className="word" onClick={() => console.log(word)}>
+                  {word}{" "}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* <button className="btn-get-frame">Получить кадр</button> */}
-
-        <div className='explanations'>
+        <div className="explanations">
           {data.phrase.sentences.map(sentence => (
             <SentenceBlock key={sentence.id} sentence={sentence} />
           ))}
