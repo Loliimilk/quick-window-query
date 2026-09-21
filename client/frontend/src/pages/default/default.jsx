@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
 import './default.css'
 import data from './phrase.json'
+import noteIcon from '../../assets/note.svg'
 
 const categories = {
-  tense:        { color: "#B3A5DE", label: "Время" },
-  structure:    { color: "#96C0D6", label: "Структура" },
-  idiom:        { color: "#E7AC7E", label: "Идиома" },
-  word_order:   { color: "#ACCE9C", label: "Порядок слов" },
-  false_friend: { color: "#E29A96", label: "Ложный друг" },
-  articles:     { color: "#D9BE7E", label: "Артикли" },
-  prepositions: { color: "#8FCFC5", label: "Предлоги" },
-  modality:     { color: "#D79FC4", label: "Модальность" }
+  tense:        { color: "#B3A5DE", label: "tense" },
+  structure:    { color: "#96C0D6", label: "structure" },
+  idiom:        { color: "#E7AC7E", label: "idiom" },
+  word_order:   { color: "#ACCE9C", label: "word_order" },
+  false_friend: { color: "#E29A96", label: "false_friend" },
+  articles:     { color: "#D9BE7E", label: "articles" },
+  prepositions: { color: "#8FCFC5", label: "prepositions" },
+  modality:     { color: "#D79FC4", label: "modality" }
 }
 
 function Highlight({ text, color, category, isHovered, onEnter, onLeave }) {
@@ -61,6 +62,9 @@ function SentenceBlock({ sentence }) {
           })}
         </p>
         <p className='sentence-translation'>{sentence.translation}</p>
+        <button className='add-dictionary'>
+          <img src={noteIcon} alt='note' className='img-button-add' />
+        </button>
       </div>
 
       <div className='grammars'>
@@ -87,7 +91,7 @@ function SentenceBlock({ sentence }) {
 }
 
 function Default() {
-  const words = data.phrase.original.split(" ")
+  const words = data.phrase.translation.split(" ")
 
   return (
     <div className="pages">

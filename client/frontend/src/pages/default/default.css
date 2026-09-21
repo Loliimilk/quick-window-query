@@ -78,6 +78,9 @@
 }
 
 .sentences {
+    display: flex;
+    flex-direction: column;
+
     background-color: #1a1a1ac7;
     padding: 22px 25px;
     border-radius: 20px;
@@ -165,6 +168,31 @@
     position: relative;
     top: -1px;
 }
+
+.add-dictionary{
+    padding: 15px;
+    margin-left: auto;
+    margin-top: auto;
+
+    background-color:rgba(107, 107, 107, 0.25);
+
+    border-radius: 20px;
+
+    transition: all 0.2s ease;
+}
+
+.add-dictionary:hover{
+    transform: translateY(-2px);
+    background-color:rgba(216, 96, 96, 0.932);
+
+}
+
+.img-button-add{
+    margin:  0 0 -5px 0;
+    width: 20px;
+    height: 20px;
+}
+
 
 @media (max-width: 850px) {
     .main-elements {
