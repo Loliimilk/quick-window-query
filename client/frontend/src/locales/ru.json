@@ -18,7 +18,13 @@
       "currentLanguage": "Текущий язык",
       "russian": "Русский",
       "english": "English"
+    },
+    "home": {
+    "captureButton": {
+        "active": "запись",
+        "idle": "захват"
     }
+  }
   },
   "languages": {
     "english": "Английский",
