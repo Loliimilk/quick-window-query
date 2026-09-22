@@ -1,9 +1,11 @@
-
+import { useTranslation } from 'react-i18next'
+import i18n from '../../i18n'
 
 function Note(){
+    const {t} = useTranslation()
     return(
         <div className="pages">
-            <p>hiii i'm Note page</p>
+            <h1>{t('pages.notes.title')}</h1>
         </div>
     )
 }

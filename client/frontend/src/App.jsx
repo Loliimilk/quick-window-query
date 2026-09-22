@@ -5,7 +5,7 @@ import './pages/pages.css'
 import LeftSide from './left-side/left-side.jsx'
 
 import Default from './pages/default/default.jsx'
-import Directory from './pages/directory/directory.jsx'
+import Directory from './pages/dictionary/dictionary.jsx'
 import Note from './pages/note/note.jsx'
 import Settings from './pages/settings/settings.jsx'
 

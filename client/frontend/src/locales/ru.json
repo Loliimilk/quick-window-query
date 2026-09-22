@@ -1,0 +1,43 @@
+{
+  "navigation": {
+    "home": "Главная",
+    "notes": "Заметки",
+    "dictionary": "Словарь",
+    "settings": "Настройки"
+  },
+  "pages": {
+    "notes": {
+      "title": "Заметки"
+    },
+    "dictionary": {
+      "title": "Словарь"
+    },
+    "settings": {
+      "title": "Настройки",
+      "interfaceLanguage": "Язык интерфейса",
+      "currentLanguage": "Текущий язык",
+      "russian": "Русский",
+      "english": "English"
+    }
+  },
+  "languages": {
+    "english": "Английский",
+    "russian": "Русский"
+  },
+  "languageSwitch": {
+    "aria": "Переключить между {{source}} и {{target}}"
+  },
+  "common": {
+    "note": "Заметка"
+  },
+  "grammarCategories": {
+    "tense": "Время",
+    "structure": "Конструкция",
+    "idiom": "Идиома",
+    "word_order": "Порядок слов",
+    "false_friend": "Ложный друг переводчика",
+    "articles": "Артикли",
+    "prepositions": "Предлоги",
+    "modality": "Модальность"
+  }
+}

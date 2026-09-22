@@ -1,0 +1,43 @@
+{
+  "navigation": {
+    "home": "Home",
+    "notes": "Notes",
+    "dictionary": "Dictionary",
+    "settings": "Settings"
+  },
+  "pages": {
+    "notes": {
+      "title": "Notes"
+    },
+    "dictionary": {
+      "title": "Dictionary"
+    },
+    "settings": {
+      "title": "Settings",
+      "interfaceLanguage": "Interface language",
+      "currentLanguage": "Current language",
+      "russian": "Русский",
+      "english": "English"
+    }
+  },
+  "languages": {
+    "english": "English",
+    "russian": "Russian"
+  },
+  "languageSwitch": {
+    "aria": "Switch between {{source}} and {{target}}"
+  },
+  "common": {
+    "note": "Note"
+  },
+  "grammarCategories": {
+    "tense": "Tense",
+    "structure": "Structure",
+    "idiom": "Idiom",
+    "word_order": "Word order",
+    "false_friend": "False friend",
+    "articles": "Articles",
+    "prepositions": "Prepositions",
+    "modality": "Modality"
+  }
+}

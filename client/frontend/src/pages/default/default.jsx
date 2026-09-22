@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import './default.css'
 import data from './phrase.json'
 import noteIcon from '../../assets/note.svg'
 
 const categories = {
-  tense:        { color: "#B3A5DE", label: "tense" },
-  structure:    { color: "#96C0D6", label: "structure" },
-  idiom:        { color: "#E7AC7E", label: "idiom" },
-  word_order:   { color: "#ACCE9C", label: "word_order" },
-  false_friend: { color: "#E29A96", label: "false_friend" },
-  articles:     { color: "#D9BE7E", label: "articles" },
-  prepositions: { color: "#8FCFC5", label: "prepositions" },
-  modality:     { color: "#D79FC4", label: "modality" }
+  tense:        { color: "#B3A5DE", label: "grammarCategories.tense" },
+  structure:    { color: "#96C0D6", label: "grammarCategories.structure" },
+  idiom:        { color: "#E7AC7E", label: "grammarCategories.idiom" },
+  word_order:   { color: "#ACCE9C", label: "grammarCategories.word_order" },
+  false_friend: { color: "#E29A96", label: "grammarCategories.false_friend" },
+  articles:     { color: "#D9BE7E", label: "grammarCategories.articles" },
+  prepositions: { color: "#8FCFC5", label: "grammarCategories.prepositions" },
+  modality:     { color: "#D79FC4", label: "grammarCategories.modality" }
 }
 
 function Highlight({ text, color, category, isHovered, onEnter, onLeave }) {
@@ -29,6 +30,7 @@ function Highlight({ text, color, category, isHovered, onEnter, onLeave }) {
 }
 
 function SentenceBlock({ sentence }) {
+  const {t} = useTranslation()
   const [hoveredId, setHoveredId] = useState(null)
   const metaOf = (category) => categories[category] ?? { color: '#999', label: category }
 
@@ -71,6 +73,7 @@ function SentenceBlock({ sentence }) {
         {sentence.constructions.map(c => {
           const meta = metaOf(c.category)
           const isHovered = hoveredId === c.id
+          const categoryLabel = meta.label ? t(meta.label) : c.category
           
           return (
             <div 
@@ -80,7 +83,7 @@ function SentenceBlock({ sentence }) {
               onMouseLeave={() => setHoveredId(null)}
               style={{ '--accent-color': meta.color }}
             >
-              <p className='category-title'>{meta.label}</p>
+              <p className='category-title'>{categoryLabel}</p>
               <p className='grammar-desc'>{c.description}</p>
             </div>
           )
