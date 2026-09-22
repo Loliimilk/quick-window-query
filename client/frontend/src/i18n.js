@@ -22,6 +22,7 @@ function saveLanguage(language) {
   try {
     window.localStorage.setItem('appLanguage', language)
   } catch {
+    return
   }
 }
 

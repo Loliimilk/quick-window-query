@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div className='app'>
-      <LeftSide  activeTab={activeTab} onchange={setActiveTab} />
+      <LeftSide activeTab={activeTab} onChange={setActiveTab} />
       <main className='content'>
         {renderPage()}
       </main>

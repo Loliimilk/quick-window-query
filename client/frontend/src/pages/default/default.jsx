@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './default.css'
 import data from './phrase.json'
@@ -78,8 +78,8 @@ function SentenceBlock({ sentence }) {
 
         <p className="sentence-translation">{sentence.translation}</p>
 
-        <button className="add-dictionary">
-          <img src={noteIcon} alt="note" className="img-button-add" />
+        <button type="button" className="add-dictionary">
+          <img src={noteIcon} alt={t('common.note')} className="img-button-add" />
         </button>
       </div>
 
@@ -136,7 +136,10 @@ function Default() {
               type="checkbox"
               checked={isOn}
               onChange={() => setIsOn(value => !value)}
-              aria-label="Switch between English and Russian"
+              aria-label={t('languageSwitch.aria', {
+                source: t('languages.english'),
+                target: t('languages.russian')
+              })}
             />
 
             <span className="language-slider">

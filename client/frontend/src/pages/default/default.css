@@ -1,11 +1,3 @@
-.pages {
-    display: flex;
-    width: 100%;
-    min-height: 100vh;
-    box-sizing: border-box;
-    overflow-x: hidden;
-}
-
 .main-elements {
     display: flex;
     flex-direction: column;
@@ -123,7 +115,7 @@
 .capture-button {
     position: fixed;
     top: 20px;
-    right: 20px;
+    right: max(20px, calc((100vw - 80px - 650px) / 2));
     z-index: 1000;
     display: inline-flex;
     align-items: center;
@@ -371,59 +363,158 @@
     height: 20px;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 1100px) {
     .main-elements {
-        padding: 20px 15px;
+        max-width: 900px;
+        gap: 24px;
+        padding: 24px 18px;
+    }
+
+    .ocr-text {
+        max-width: 760px;
+    }
+
+    .capture-button {
+        right: max(16px, calc((100vw - 64px - 760px) / 2));
     }
 
     .explanation {
         flex-direction: column;
+        gap: 12px;
     }
 
-    .sentences,
-    .grammars {
+    .sentences {
         width: 100%;
+        min-width: 0;
+        padding: 24px;
     }
 
     .grammars {
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        flex: none;
+        width: 100%;
+        min-width: 0;
     }
 
     .grammar-item {
-        flex: 1 1 200px;
+        min-width: 0;
+        font-size: 0.94rem;
     }
 
     .grammar-item:hover,
     .grammar-item.active {
-        transform: translateY(-4px);
+        transform: translateY(-3px);
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
+    .main-elements {
+        max-width: none;
+        gap: 20px;
+        padding: 16px 12px 24px;
+    }
+
+    .ocr-text {
+        max-width: none;
+        min-height: 0;
+        border-width: 2px;
+        border-radius: 16px;
+    }
+
     .capture-button {
-        top: 14px;
-        right: 14px;
-        max-width: calc(100vw - 28px);
+        top: 12px;
+        right: 12px;
+        height: 36px;
+        max-width: calc(100vw - 24px);
+        padding: 0 11px;
+        border-radius: 11px;
     }
 
-    .default-text {
-        margin: 12px 15px 15px;
-        font-size: 1rem;
+    .capture-icon {
+        width: 17px;
+        height: 17px;
     }
 
-    .sentence {
-        font-size: 1.1rem;
-    }
-
-    .grammars {
-        flex-direction: column;
-    }
-
-    .grammar-item {
-        width: 100%;
+    .capture-label {
+        font-size: 0.8rem;
     }
 
     .language-switch {
-        margin: 12px 0 0 12px;
+        margin: 11px 0 0 11px;
+    }
+
+    .default-text {
+        margin: 10px 14px 16px;
+        font-size: 1rem;
+        line-height: 1.65;
+    }
+
+    .explanations {
+        gap: 18px;
+    }
+
+    .explanation {
+        gap: 10px;
+    }
+
+    .sentences {
+        padding: 18px 16px;
+        border-radius: 16px;
+    }
+
+    .sentence {
+        margin-bottom: 10px;
+        font-size: 1.08rem;
+        line-height: 1.55;
+    }
+
+    .sentence-translation {
+        font-size: 0.9rem;
+    }
+
+    .grammars {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .grammar-item {
+        width: auto;
+        padding: 11px 13px;
+        font-size: 0.88rem;
+        opacity: 0.9;
+    }
+
+    .grammar-item:hover,
+    .grammar-item.active {
+        transform: none;
+    }
+
+    .add-dictionary {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .img-button-add {
+        width: 19px;
+        height: 19px;
+    }
+}
+
+@media (max-width: 360px) {
+    .main-elements {
+        padding-right: 9px;
+        padding-left: 9px;
+    }
+
+    .default-text {
+        margin-right: 10px;
+        margin-left: 10px;
+        font-size: 0.95rem;
+    }
+
+    .sentences {
+        padding: 16px 14px;
     }
 }
