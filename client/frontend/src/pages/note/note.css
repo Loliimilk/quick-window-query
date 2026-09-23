@@ -1,0 +1,420 @@
+.notes-page {
+  justify-content: center;
+}
+
+.notes-layout {
+  width: 100%;
+  max-width: 1120px;
+  padding: 30px 20px;
+  box-sizing: border-box;
+}
+
+.notes-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.notes-header h1 {
+  margin: 0;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.notes-header p {
+  margin: 8px 0 0;
+  color: #b8b8b8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.95rem;
+}
+
+.note-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: #1a1a1ac7;
+  border: 1px solid #292929;
+  border-radius: 8px;
+}
+
+.note-composer textarea,
+.note-card textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  resize: vertical;
+  color: #f8f1ea;
+  background: rgba(255, 250, 242, 0.06);
+  border: 1px solid rgba(255, 250, 242, 0.1);
+  border-radius: 8px;
+  font: 0.98rem/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  outline: none;
+  transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.note-composer textarea {
+  min-height: 74px;
+  padding: 11px 12px;
+}
+
+.note-card textarea {
+  min-height: 76px;
+  padding: 12px 13px;
+  margin-bottom: 12px;
+  cursor: text;
+}
+
+.note-composer textarea::placeholder,
+.note-card textarea::placeholder {
+  color: #8d8d8d;
+}
+
+.note-composer textarea:focus,
+.note-card textarea:focus {
+  background: rgba(255, 250, 242, 0.08);
+  border-color: rgba(241, 163, 163, 0.7);
+  box-shadow: 0 0 0 3px rgba(241, 163, 163, 0.12);
+}
+
+.note-composer button,
+.note-card-actions button {
+  min-height: 42px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  color: #fff;
+  background: #d6987f;
+  border: 1px solid #d6987f;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color 140ms ease, border-color 140ms ease, opacity 140ms ease;
+}
+
+.note-composer button:hover,
+.note-card-actions button:hover {
+  background: #cb8d76;
+  border-color: #cb8d76;
+}
+
+.note-composer button:disabled {
+  opacity: 0.42;
+}
+
+.notes-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.note-card {
+  min-width: 0;
+  box-sizing: border-box;
+  transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  will-change: transform;
+}
+
+.note-card.has-phrase {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 32%);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.note-card.is-manual {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 16px;
+  background: #1a1a1ac7;
+  border: 1px solid #292929;
+  border-radius: 8px;
+}
+
+.note-card.is-drag-before,
+.note-card.is-drag-after {
+  transform: translateY(-2px);
+}
+
+.note-card.is-drag-before {
+  box-shadow: inset 0 3px 0 rgba(241, 163, 163, 0.95), 0 0 0 3px rgba(241, 163, 163, 0.12);
+}
+
+.note-card.is-drag-after {
+  box-shadow: inset 0 -3px 0 rgba(241, 163, 163, 0.95), 0 0 0 3px rgba(241, 163, 163, 0.12);
+}
+
+.note-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 250px;
+  padding: 18px 20px;
+  box-sizing: border-box;
+  background: #1a1a1ac7;
+  border: 2px solid #272727;
+  border-radius: 14px;
+}
+
+.note-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 22px;
+  color: #aebcc4;
+  cursor: grab;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.78rem;
+  user-select: none;
+}
+
+.note-card-top:active {
+  cursor: grabbing;
+}
+
+.note-card-meta {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.note-card-meta {
+  gap: 8px;
+}
+
+.note-type {
+  color: #8fcfc5;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.note-card-top time {
+  min-width: max-content;
+  color: #9a9a9a;
+}
+
+.note-grip {
+  display: block;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 18px;
+  opacity: 0.42;
+  background-image:
+    radial-gradient(circle, #d6d6d6 1.3px, transparent 1.4px),
+    radial-gradient(circle, #d6d6d6 1.3px, transparent 1.4px);
+  background-position: 0 0, 6px 0;
+  background-size: 6px 6px;
+}
+
+.note-phrase-block {
+  margin-top: 2px;
+  margin-bottom: 12px;
+}
+
+.note-phrase-block blockquote {
+  margin: 0;
+  color: #fff;
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 1.18rem;
+  line-height: 1.55;
+}
+
+.note-phrase-block p {
+  margin: 12px 0 0;
+  color: #b0b0b0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.note-colored {
+  display: inline-block;
+  padding: 0 0.15em 0.05em;
+  color: var(--accent-color, #fff);
+  border-bottom: 2px solid var(--accent-color, #B3A5DE);
+  border-radius: 0.25em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.note-colored.hovered,
+.note-colored:hover {
+  position: relative;
+  top: -1px;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.note-explanations {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.note-explanation {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 15px;
+  box-sizing: border-box;
+  background-color: #1a1a1a94;
+  border: 1px solid #272727;
+  border-radius: 8px;
+  box-shadow: -4px 0 0 var(--accent-color, #96c0d6);
+  opacity: 0.75;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.note-explanation:hover,
+.note-explanation.active {
+  opacity: 1;
+  transform: translateX(6px);
+  background-color: #26262ce6;
+  border-color: #383838;
+}
+
+.note-explanation p {
+  margin: 0 0 6px;
+  color: var(--accent-color, #96c0d6);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.note-explanation span {
+  display: block;
+  color: #d8d8d8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.42;
+}
+
+.note-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.note-card-actions button {
+  min-height: 36px;
+  color: #f9d7d7;
+  background: rgba(216, 96, 96, 0.12);
+  border-color: rgba(216, 96, 96, 0.3);
+}
+
+.note-card-actions button:hover {
+  color: #fff;
+  background: rgba(216, 96, 96, 0.55);
+  border-color: rgba(216, 96, 96, 0.6);
+}
+
+.notes-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 28px;
+  box-sizing: border-box;
+  color: #b8b8b8;
+  background: #1a1a1a73;
+  border: 1px solid #292929;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.notes-empty h2 {
+  margin: 0 0 8px;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.2rem;
+}
+
+.notes-empty p {
+  max-width: 380px;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .notes-list {
+    grid-template-columns: 1fr;
+  }
+
+  .note-card.has-phrase {
+    grid-template-columns: 1fr;
+  }
+
+  .note-explanations {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .notes-layout {
+    padding: 18px 12px 24px;
+  }
+
+  .notes-header {
+    margin-bottom: 14px;
+  }
+
+  .notes-header h1 {
+    font-size: 1.65rem;
+  }
+
+  .note-composer {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .note-composer button {
+    width: 100%;
+  }
+
+  .note-main,
+  .note-card.is-manual {
+    padding: 14px;
+  }
+
+  .note-card-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .note-explanations {
+    grid-template-columns: 1fr;
+  }
+
+  .note-phrase-block blockquote {
+    font-size: 1.06rem;
+  }
+}

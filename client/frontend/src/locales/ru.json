@@ -7,7 +7,19 @@
   },
   "pages": {
     "notes": {
-      "title": "Заметки"
+      "title": "Заметки",
+      "count": "Сохранено: {{count}}",
+      "newNote": "Новая заметка",
+      "newNotePlaceholder": "Напишите заметку",
+      "addButton": "Добавить",
+      "emptyTitle": "Заметок пока нет",
+      "emptyDescription": "Сохраненные фразы и ваши заметки появятся здесь.",
+      "phraseLabel": "Фраза",
+      "noteLabel": "Заметка",
+      "noteText": "Текст заметки",
+      "notePlaceholder": "Допишите заметку",
+      "deleteButton": "Удалить",
+      "dragHandle": "Перетащить заметку"
     },
     "dictionary": {
       "title": "Словарь"
@@ -23,7 +35,8 @@
     "captureButton": {
         "active": "запись",
         "idle": "захват"
-    }
+    },
+    "addNote": "Добавить в заметки"
   }
   },
   "languages": {

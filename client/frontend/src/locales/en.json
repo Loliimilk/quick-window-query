@@ -7,7 +7,19 @@
   },
   "pages": {
     "notes": {
-      "title": "Notes"
+      "title": "Notes",
+      "count": "{{count}} saved",
+      "newNote": "New note",
+      "newNotePlaceholder": "Write a note",
+      "addButton": "Add note",
+      "emptyTitle": "No notes yet",
+      "emptyDescription": "Saved phrases and your notes will appear here.",
+      "phraseLabel": "Phrase",
+      "noteLabel": "Note",
+      "noteText": "Note text",
+      "notePlaceholder": "Add your note",
+      "deleteButton": "Delete",
+      "dragHandle": "Drag to reorder"
     },
     "dictionary": {
       "title": "Dictionary"
@@ -23,7 +35,8 @@
     "captureButton": {
         "active": "capturing",
         "idle": "capture"
-    }
+    },
+    "addNote": "Add to notes"
   }
   },
   "languages": {

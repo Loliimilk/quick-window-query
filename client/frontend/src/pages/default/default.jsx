@@ -4,17 +4,7 @@ import './default.css'
 import data from './phrase.json'
 import noteIcon from '../../assets/note.svg'
 import captureIcon from '../../assets/capture.svg'
-
-const categories = {
-  tense: { color: '#B3A5DE', label: 'grammarCategories.tense' },
-  structure: { color: '#96C0D6', label: 'grammarCategories.structure' },
-  idiom: { color: '#E7AC7E', label: 'grammarCategories.idiom' },
-  word_order: { color: '#ACCE9C', label: 'grammarCategories.word_order' },
-  false_friend: { color: '#E29A96', label: 'grammarCategories.false_friend' },
-  articles: { color: '#D9BE7E', label: 'grammarCategories.articles' },
-  prepositions: { color: '#8FCFC5', label: 'grammarCategories.prepositions' },
-  modality: { color: '#D79FC4', label: 'grammarCategories.modality' }
-}
+import { getGrammarCategory } from '../../grammar/categories.js'
 
 function Highlight({ text, color, category, isHovered, onEnter, onLeave }) {
   return (
@@ -30,15 +20,14 @@ function Highlight({ text, color, category, isHovered, onEnter, onLeave }) {
   )
 }
 
-function SentenceBlock({ sentence }) {
+function SentenceBlock({ sentence, onAddPhraseToNotes }) {
   const { t } = useTranslation()
   const [hoveredId, setHoveredId] = useState(null)
 
-  const getCategory = category => categories[category] ?? { color: '#999', label: category }
   const partData = {}
 
   for (const construction of sentence.constructions) {
-    const meta = getCategory(construction.category)
+    const meta = getGrammarCategory(construction.category)
 
     for (const ref of construction.refs) {
       if (!partData[ref]) {
@@ -78,14 +67,20 @@ function SentenceBlock({ sentence }) {
 
         <p className="sentence-translation">{sentence.translation}</p>
 
-        <button type="button" className="add-dictionary">
+        <button
+          type="button"
+          className="add-dictionary"
+          onClick={() => onAddPhraseToNotes?.(sentence)}
+          aria-label={t('pages.home.addNote')}
+          title={t('pages.home.addNote')}
+        >
           <img src={noteIcon} alt={t('common.note')} className="img-button-add" />
         </button>
       </div>
 
       <div className="grammars">
         {sentence.constructions.map(construction => {
-          const meta = getCategory(construction.category)
+          const meta = getGrammarCategory(construction.category)
           const isHovered = hoveredId === construction.id
 
           return (
@@ -106,7 +101,7 @@ function SentenceBlock({ sentence }) {
   )
 }
 
-function Default() {
+function Default({ onAddPhraseToNotes }) {
   const { t } = useTranslation()
   const [isOn, setIsOn] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
@@ -161,7 +156,11 @@ function Default() {
 
         <div className="explanations">
           {data.phrase.sentences.map(sentence => (
-            <SentenceBlock key={sentence.id} sentence={sentence} />
+            <SentenceBlock
+              key={sentence.id}
+              sentence={sentence}
+              onAddPhraseToNotes={onAddPhraseToNotes}
+            />
           ))}
         </div>
       </div>
