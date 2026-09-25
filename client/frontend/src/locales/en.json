@@ -26,10 +26,79 @@
     },
     "settings": {
       "title": "Settings",
+      "status": "Local configuration",
+      "reset": "Reset",
       "interfaceLanguage": "Interface language",
       "currentLanguage": "Current language",
       "russian": "Русский",
-      "english": "English"
+      "english": "English",
+      "translationMode": "Translation method",
+      "translatorEngine": "Translator",
+      "llmLocation": "LLM runtime",
+      "localEndpoint": "Local endpoint",
+      "localModel": "Local model",
+      "cloudProvider": "Cloud provider",
+      "cloudSubscription": "Subscription",
+      "cloudAutomaticBadge": "Auto",
+      "cloudAutomatic": "Cloud mode is configured automatically.",
+      "captureInterval": "Frame interval",
+      "captureIdleInterval": "Idle polling",
+      "captureRetryInterval": "Retry delay",
+      "captureSkipUnchanged": "Skip unchanged frames",
+      "overlayDebounce": "Window update debounce",
+      "overlayBorder": "Window border",
+      "overlayMinWidth": "Min width",
+      "overlayMinHeight": "Min height",
+      "boundsEndpoint": "Bounds endpoint",
+      "ocrServiceUrl": "OCR service",
+      "ocrLanguages": "OCR languages",
+      "ocrUseGpu": "Use GPU for OCR",
+      "sections": {
+        "interface": {
+          "eyebrow": "App",
+          "title": "Interface"
+        },
+        "translation": {
+          "eyebrow": "Text",
+          "title": "Translation"
+        },
+        "llm": {
+          "eyebrow": "Reasoning",
+          "title": "LLM"
+        },
+        "capture": {
+          "eyebrow": "Screen",
+          "title": "Capture"
+        },
+        "overlay": {
+          "eyebrow": "Window",
+          "title": "Capture window"
+        },
+        "ocr": {
+          "eyebrow": "Vision",
+          "title": "OCR"
+        }
+      },
+      "summary": {
+        "language": "Language",
+        "translation": "Translation",
+        "llm": "LLM",
+        "capture": "Capture"
+      },
+      "translationModes": {
+        "translator": "Translator",
+        "llm": "LLM"
+      },
+      "translatorEngines": {
+        "system": "System",
+        "google": "Google",
+        "deepl": "DeepL",
+        "yandex": "Yandex"
+      },
+      "llmLocations": {
+        "local": "Local",
+        "cloud": "Cloud"
+      }
     },
     "home": {
     "captureButton": {

@@ -4,7 +4,25 @@ import { initReactI18next } from 'react-i18next'
 import en from './locales/en.json'
 import ru from './locales/ru.json'
 
-const supportedLanguages = ['en', 'ru']
+const supportedLanguages = [
+  'ru',
+  'en',
+  'ja',
+  'ko',
+  'zh',
+  'es',
+  'fr',
+  'de',
+  'it',
+  'pt',
+  'pl',
+  'uk',
+  'tr',
+  'ar',
+  'hi',
+  'id',
+  'vi'
+]
 
 function readSavedLanguage() {
   if (typeof window === 'undefined') return null

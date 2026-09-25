@@ -26,10 +26,79 @@
     },
     "settings": {
       "title": "Настройки",
+      "status": "Локальная конфигурация",
+      "reset": "Сбросить",
       "interfaceLanguage": "Язык интерфейса",
       "currentLanguage": "Текущий язык",
       "russian": "Русский",
-      "english": "English"
+      "english": "English",
+      "translationMode": "Способ перевода",
+      "translatorEngine": "Переводчик",
+      "llmLocation": "Режим модели",
+      "localEndpoint": "Локальный endpoint",
+      "localModel": "Локальная модель",
+      "cloudProvider": "Облачный провайдер",
+      "cloudSubscription": "Подписка",
+      "cloudAutomaticBadge": "Авто",
+      "cloudAutomatic": "В облачном режиме все настраивается автоматически.",
+      "captureInterval": "Интервал снимков",
+      "captureIdleInterval": "Опрос без окна",
+      "captureRetryInterval": "Задержка повтора",
+      "captureSkipUnchanged": "Пропускать неизмененные кадры",
+      "overlayDebounce": "Задержка обновления окна",
+      "overlayBorder": "Толщина рамки",
+      "overlayMinWidth": "Мин. ширина",
+      "overlayMinHeight": "Мин. высота",
+      "boundsEndpoint": "Endpoint окна",
+      "ocrServiceUrl": "OCR сервис",
+      "ocrLanguages": "Языки OCR",
+      "ocrUseGpu": "Использовать GPU для OCR",
+      "sections": {
+        "interface": {
+          "eyebrow": "Приложение",
+          "title": "Интерфейс"
+        },
+        "translation": {
+          "eyebrow": "Текст",
+          "title": "Перевод"
+        },
+        "llm": {
+          "eyebrow": "Разбор",
+          "title": "Модель"
+        },
+        "capture": {
+          "eyebrow": "Экран",
+          "title": "Захват"
+        },
+        "overlay": {
+          "eyebrow": "Окно",
+          "title": "Окно захвата"
+        },
+        "ocr": {
+          "eyebrow": "Распознавание",
+          "title": "OCR"
+        }
+      },
+      "summary": {
+        "language": "Язык",
+        "translation": "Перевод",
+        "llm": "Модель",
+        "capture": "Захват"
+      },
+      "translationModes": {
+        "translator": "Переводчик",
+        "llm": "LLM"
+      },
+      "translatorEngines": {
+        "system": "Системный",
+        "google": "Google",
+        "deepl": "DeepL",
+        "yandex": "Yandex"
+      },
+      "llmLocations": {
+        "local": "Локально",
+        "cloud": "Облако"
+      }
     },
     "home": {
     "captureButton": {
