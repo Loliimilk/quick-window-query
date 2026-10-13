@@ -11,6 +11,7 @@ import (
 
 	"backend/internal/api"
 	"backend/internal/capture"
+	"backend/internal/ocr"
 )
 
 const ocrServerURL = "http://127.0.0.1:8001/binary"
@@ -31,7 +32,7 @@ func main() {
 
 	// Инициализируем модули
 	screenCap := capture.NewScreenCapture()
-	ocrClient := api.NewOCRClient(ocrServerURL)
+	ocrClient := ocr.NewOCRClient(ocrServerURL)
 	server := api.NewServer(screenCap)
 
 	frames := make(chan []byte)

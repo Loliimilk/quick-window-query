@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import './default.css'
+import './CapturePage.css'
 import data from './phrase.json'
 import noteIcon from '../../assets/note.svg'
 import captureIcon from '../../assets/capture.svg'
@@ -101,7 +101,7 @@ function SentenceBlock({ sentence, onAddPhraseToNotes }) {
   )
 }
 
-function Default({ onAddPhraseToNotes }) {
+function CapturePage({ onAddPhraseToNotes }) {
   const { t } = useTranslation()
   const [isOn, setIsOn] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
@@ -168,4 +168,4 @@ function Default({ onAddPhraseToNotes }) {
   )
 }
 
-export default Default
+export default CapturePage

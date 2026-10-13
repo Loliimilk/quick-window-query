@@ -1,6 +1,6 @@
 module backend
 
-go 1.27.0
+go 1.26.5
 
 require github.com/kbinani/screenshot v0.0.0-20250624051815-089614a94018
 

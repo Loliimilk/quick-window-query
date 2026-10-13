@@ -5,7 +5,7 @@ import {
   resetSettings,
   settingRanges,
   writeSettings
-} from '../../settings/settingsStore.js'
+} from '../../features/settings/settingsStore.js'
 import './settings.css'
 
 const interfaceLanguageOptions = [

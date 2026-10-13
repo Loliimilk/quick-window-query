@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-function Directory() {
+function Dictionary() {
     const { t } = useTranslation()
 
     return (
@@ -10,4 +10,4 @@ function Directory() {
     )
 }
 
-export default Directory
+export default Dictionary

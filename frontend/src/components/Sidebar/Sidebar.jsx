@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import './left-side.css'
+import './Sidebar.css'
 
-import noteIcon from '../assets/note.svg'
-import directoryIcon from '../assets/directory.svg'
-import settingsIcon from '../assets/setting.svg'
+import noteIcon from '../../assets/note.svg'
+import directoryIcon from '../../assets/directory.svg'
+import settingsIcon from '../../assets/setting.svg'
 
 const tabs = [
   { id: 'logo', icon: null, label: 'QwQ', translationKey: 'navigation.home' },
@@ -12,7 +12,7 @@ const tabs = [
   { id: 'settings', icon: settingsIcon, translationKey: 'navigation.settings' },
 ]
 
-function LeftSide({ activeTab, onChange }) {
+function Sidebar({ activeTab, onChange }) {
   const { t } = useTranslation()
 
   return (
@@ -42,4 +42,4 @@ function LeftSide({ activeTab, onChange }) {
   )
 }
 
-export default LeftSide
+export default Sidebar

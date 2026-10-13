@@ -1,0 +1,8 @@
+# Overlay
+PyQt5>=5.15,<6
+requests>=2.31,<3
+
+# OCR service (EasyOCR installs its transitive dependencies, including PyTorch)
+fastapi>=0.100,<1
+uvicorn>=0.23,<1
+easyocr>=1.7,<2
