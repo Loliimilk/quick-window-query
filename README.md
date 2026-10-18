@@ -1,21 +1,21 @@
-# QwQ — Quick Window Query
+# QwQ – Quick Window Query
 
 Прототип приложения для выделения области экрана, распознавания текста и работы с языковыми заметками.
 
 ## Структура
 
-- `backend/cmd/app` — точка входа Go.
-- `backend/internal/api` — HTTP API для координат области.
-- `backend/internal/capture` — захват экрана.
-- `backend/internal/ocr` — HTTP-клиент OCR.
-- `frontend/src/components` — общие компоненты интерфейса.
-- `frontend/src/pages` — страницы и стили.
-- `frontend/src/features` — логика заметок и настроек.
-- `frontend/src/grammar`, `locales`, `assets` — категории грамматики, переводы и иконки.
-- `overlay` — PyQt-рамка выбора области.
-- `ocr_service` — FastAPI + EasyOCR.
-- `go.work` — Go workspace.
-- `start.bat` — запуск компонентов под Windows.
+- `backend/cmd/app` – точка входа Go.
+- `backend/internal/api` – HTTP API для координат области.
+- `backend/internal/capture` – захват экрана.
+- `backend/internal/ocr` – HTTP-клиент OCR.
+- `frontend/src/components` – общие компоненты интерфейса.
+- `frontend/src/pages` – страницы и стили.
+- `frontend/src/features` – логика заметок и настроек.
+- `frontend/src/grammar`, `locales`, `assets` – категории грамматики, переводы и иконки.
+- `overlay` – PyQt-рамка выбора области.
+- `ocr_service` – FastAPI + EasyOCR.
+- `go.work` – Go workspace.
+- `start.bat` – запуск компонентов под Windows.
 
 Оверлей отправляет координаты в Go (`POST :8080/update-bounds`). Go захватывает область и передаёт PNG в OCR (`POST :8001/binary`), затем выводит результат в консоль. Веб-интерфейс пока использует демонстрационные фразы из `frontend/src/pages/capture/phrase.json`; заметки и настройки хранит в localStorage. Подключение интерфейса к OCR ещё не реализовано.
 
@@ -46,7 +46,7 @@ go -C backend mod download
 
 Для остановки завершите процессы во всех открытых окнах через Ctrl+C и закройте окна. Если запуск оборвался, уже открытые компоненты нужно остановить отдельно перед повторным запуском.
 
-Раздельный запуск — каждая команда в отдельном терминале из корня:
+Раздельный запуск – каждая команда в отдельном терминале из корня:
 
 ```powershell
 .\.venv\Scripts\python.exe -m uvicorn ocr_server:app --app-dir ocr_service --port 8001
