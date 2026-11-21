@@ -254,39 +254,41 @@ function CapturePage({ onAddPhraseToNotes }) {
   return (
     <div className="pages">
       <div className="main-elements">
-        <button
-          type="button"
-          className={`capture-button ${isCapturing ? 'is-capturing' : ''}`}
-          onClick={toggleCapture}
-          disabled={isBusy || (!isCapturing && isProcessing)}
-          aria-label={captureLabel}
-          aria-pressed={isCapturing}
-        >
-          <img src={captureIcon} alt="" aria-hidden="true" className="capture-icon" />
-          <span className="capture-label">{captureLabel}</span>
-        </button>
-
         {serviceError && <p className="capture-error" role="alert">{serviceError}</p>}
 
         <div className="ocr-text">
-          {showSample && (
-            <label className="language-switch">
-              <input
-                type="checkbox"
-                checked={isOn}
-                onChange={() => setIsOn(value => !value)}
-                aria-label={t('languageSwitch.aria', {
-                  source: t('languages.english'),
-                  target: t('languages.russian')
-                })}
-              />
+          <div className="ocr-toolbar">
+            {showSample && (
+              <label className="language-switch">
+                <input
+                  type="checkbox"
+                  checked={isOn}
+                  onChange={() => setIsOn(value => !value)}
+                  aria-label={t('languageSwitch.aria', {
+                    source: t('languages.english'),
+                    target: t('languages.russian')
+                  })}
+                />
 
-              <span className="language-slider">
-                <span className="language-option language-left">EN</span>
-                <span className="language-option language-right">RU</span>
-              </span>
-            </label>
-          )}
+                <span className="language-slider">
+                  <span className="language-option language-left">EN</span>
+                  <span className="language-option language-right">RU</span>
+                </span>
+              </label>
+            )}
+
+            <button
+              type="button"
+              className={`capture-button ${isCapturing ? 'is-capturing' : ''}`}
+              onClick={toggleCapture}
+              disabled={isBusy || (!isCapturing && isProcessing)}
+              aria-label={captureLabel}
+              aria-pressed={isCapturing}
+            >
+              <img src={captureIcon} alt="" aria-hidden="true" className="capture-icon" />
+              <span className="capture-label">{captureLabel}</span>
+            </button>
+          </div>
 
           <div className="default-text">
             {(isCapturing || isProcessing) && !ocrResult && (
