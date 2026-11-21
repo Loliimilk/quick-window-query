@@ -3,7 +3,8 @@ package capture
 import (
 	"bytes"
 	"context"
-	"crypto/md5"
+	"crypto/sha256"
+	"errors"
 	"fmt"
 	"image"
 	"image/png"
@@ -24,22 +25,120 @@ type ScreenCapture struct {
 	mu            sync.Mutex
 	customBounds  image.Rectangle
 	hasCustomRect bool
+	enabled       bool
+	framePending  bool
+	changed       chan struct{}
+	lastError     string
 }
 
 func NewScreenCapture() *ScreenCapture {
-	return &ScreenCapture{}
+	return &ScreenCapture{changed: make(chan struct{}, 1)}
 }
 
-func (s *ScreenCapture) UpdateBounds(b Bounds) {
+const maxCapturePixels = 34_000_000
+
+func (s *ScreenCapture) UpdateBounds(b Bounds) error {
+	if b.Width <= 0 || b.Height <= 0 {
+		return errors.New("width and height must be positive")
+	}
+	if b.Width > maxCapturePixels/b.Height {
+		return fmt.Errorf("capture area exceeds %d pixels", maxCapturePixels)
+	}
+	maxInt := int(^uint(0) >> 1)
+	if b.X > maxInt-b.Width || b.Y > maxInt-b.Height {
+		return errors.New("bounds overflow")
+	}
+
+	rect := image.Rect(b.X, b.Y, b.X+b.Width, b.Y+b.Height)
+	displayCount := screenshot.NumActiveDisplays()
+	if displayCount == 0 {
+		return errors.New("no active displays")
+	}
+	virtualBounds := image.Rectangle{}
+	for i := 0; i < displayCount; i++ {
+		virtualBounds = virtualBounds.Union(screenshot.GetDisplayBounds(i))
+	}
+	if rect.Min.X < virtualBounds.Min.X || rect.Min.Y < virtualBounds.Min.Y ||
+		rect.Max.X > virtualBounds.Max.X || rect.Max.Y > virtualBounds.Max.Y {
+		return errors.New("bounds must fit within the virtual desktop")
+	}
+
+	s.mu.Lock()
+	s.customBounds = rect
+	s.hasCustomRect = true
+	s.lastError = ""
+	s.mu.Unlock()
+	s.notifyChanged()
+	return nil
+}
+
+func (s *ScreenCapture) SetEnabled(enabled bool) {
+	s.mu.Lock()
+	s.enabled = enabled
+	if enabled {
+		s.lastError = ""
+	}
+	s.mu.Unlock()
+	s.notifyChanged()
+}
+
+func (s *ScreenCapture) HasBounds() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.customBounds = image.Rect(b.X, b.Y, b.X+b.Width, b.Y+b.Height)
-	s.hasCustomRect = true
+	return s.hasCustomRect
 }
 
-func (s *ScreenCapture) StartCapture(ctx context.Context, ch chan<- []byte) {
+func (s *ScreenCapture) BeginFrame(rect image.Rectangle) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if !s.enabled || !s.hasCustomRect || s.customBounds != rect {
+		return false
+	}
+	s.framePending = true
+	return true
+}
+
+func (s *ScreenCapture) ClearFramePending() {
+	s.mu.Lock()
+	s.framePending = false
+	s.mu.Unlock()
+}
+
+func (s *ScreenCapture) IsFramePending() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.framePending
+}
+
+func (s *ScreenCapture) SetError(err error) {
+	s.mu.Lock()
+	if err == nil {
+		s.lastError = ""
+	} else {
+		s.lastError = err.Error()
+	}
+	s.mu.Unlock()
+}
+
+func (s *ScreenCapture) LastError() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.lastError
+}
+
+func (s *ScreenCapture) IsEnabled() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.enabled
+}
+
+func (s *ScreenCapture) StartCapture(ctx context.Context, frames chan<- []byte, acknowledgements <-chan bool) {
 	enc := png.Encoder{CompressionLevel: png.BestSpeed}
-	var lastHash [16]byte
+	var lastHash [sha256.Size]byte
+	var lastRect image.Rectangle
+	hasLastHash := false
+	loggedCaptureError := false
+	retryDelay := time.Duration(0)
 
 	for {
 		select {
@@ -50,39 +149,114 @@ func (s *ScreenCapture) StartCapture(ctx context.Context, ch chan<- []byte) {
 		}
 
 		s.mu.Lock()
-		active := s.hasCustomRect
+		active := s.enabled && s.hasCustomRect
 		rect := s.customBounds
 		s.mu.Unlock()
 
 		if !active {
-			time.Sleep(100 * time.Millisecond)
+			hasLastHash = false
+			lastRect = image.Rectangle{}
+			retryDelay = 0
+			if !s.waitFor(ctx, 100*time.Millisecond) {
+				return
+			}
 			continue
+		}
+		if rect != lastRect {
+			hasLastHash = false
+			lastRect = rect
+			retryDelay = 0
 		}
 
 		img, err := screenshot.CaptureRect(rect)
 		if err != nil {
-			time.Sleep(200 * time.Millisecond)
+			s.SetError(err)
+			if !loggedCaptureError {
+				fmt.Printf("[Screen] capture failed for %v: %v\n", rect, err)
+				loggedCaptureError = true
+			}
+			if !s.waitFor(ctx, 200*time.Millisecond) {
+				return
+			}
 			continue
+		}
+		if loggedCaptureError {
+			fmt.Println("[Screen] capture recovered.")
+			loggedCaptureError = false
+			s.SetError(nil)
 		}
 
-		currentHash := md5.Sum(img.Pix)
-		if currentHash == lastHash {
-			time.Sleep(50 * time.Millisecond)
+		currentHash := sha256.Sum256(img.Pix)
+		if hasLastHash && currentHash == lastHash {
+			if !s.waitFor(ctx, 50*time.Millisecond) {
+				return
+			}
 			continue
 		}
-		lastHash = currentHash
 
 		var buf bytes.Buffer
 		if err := enc.Encode(&buf, img); err != nil {
+			fmt.Printf("[Screen] PNG encode failed: %v\n", err)
+			if !s.waitFor(ctx, 200*time.Millisecond) {
+				return
+			}
 			continue
 		}
 
+		if !s.BeginFrame(rect) {
+			if !s.waitFor(ctx, 50*time.Millisecond) {
+				return
+			}
+			continue
+		}
 		select {
-		case ch <- buf.Bytes():
+		case frames <- buf.Bytes():
 		case <-ctx.Done():
+			s.ClearFramePending()
 			return
 		}
 
-		time.Sleep(50 * time.Millisecond)
+		select {
+		case succeeded := <-acknowledgements:
+			if succeeded {
+				lastHash = currentHash
+				hasLastHash = true
+				retryDelay = 0
+			} else {
+				if retryDelay == 0 {
+					retryDelay = 2 * time.Second
+				} else if retryDelay < 30*time.Second {
+					retryDelay *= 2
+					if retryDelay > 30*time.Second {
+						retryDelay = 30 * time.Second
+					}
+				}
+				if !s.waitFor(ctx, retryDelay) {
+					return
+				}
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+func (s *ScreenCapture) notifyChanged() {
+	select {
+	case s.changed <- struct{}{}:
+	default:
+	}
+}
+
+func (s *ScreenCapture) waitFor(ctx context.Context, delay time.Duration) bool {
+	timer := time.NewTimer(delay)
+	defer timer.Stop()
+	select {
+	case <-timer.C:
+		return true
+	case <-s.changed:
+		return true
+	case <-ctx.Done():
+		return false
 	}
 }

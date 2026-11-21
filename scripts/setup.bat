@@ -1,5 +1,7 @@
 @echo off
 setlocal
+if exist "%USERPROFILE%\AppData\Local\Programs\Go\1.26.11\bin\go.exe" set "PATH=%USERPROFILE%\AppData\Local\Programs\Go\1.26.11\bin;%PATH%"
+if exist "%USERPROFILE%\AppData\Local\Programs\NodeJS\node.exe" set "PATH=%USERPROFILE%\AppData\Local\Programs\NodeJS;%PATH%"
 for %%I in ("%~dp0..") do set "ROOT=%%~fI"
 pushd "%ROOT%" || exit /b 1
 where python >nul 2>&1

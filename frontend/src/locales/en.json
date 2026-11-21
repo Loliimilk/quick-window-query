@@ -101,12 +101,18 @@
       }
     },
     "home": {
-    "captureButton": {
+      "captureButton": {
         "active": "capturing",
         "idle": "capture"
-    },
-    "addNote": "Add to notes"
-  }
+      },
+      "waitingForOCR": "Waiting for recognized text…",
+      "waitingForBounds": "Move the selection window over the area to capture…",
+      "noTextFound": "No text was found in the selected area.",
+      "backendError": "Could not connect to the local capture service.",
+      "captureBusy": "Wait for the current OCR request to finish before restarting capture.",
+      "ocrError": "Capture service error",
+      "addNote": "Add to notes"
+    }
   },
   "languages": {
     "english": "English",

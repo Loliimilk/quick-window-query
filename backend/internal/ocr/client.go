@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const maxOCRResponseBytes = 4 * 1024 * 1024
+
 type OCRClient struct {
 	client    *http.Client
 	serverURL string
@@ -18,7 +20,7 @@ func NewOCRClient(serverURL string) *OCRClient {
 	return &OCRClient{
 		serverURL: serverURL,
 		client: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: 60 * time.Second,
 			Transport: &http.Transport{
 				DisableKeepAlives: true,
 			},
@@ -39,9 +41,12 @@ func (c *OCRClient) SendFrame(ctx context.Context, frame []byte) ([]byte, error)
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxOCRResponseBytes+1))
 	if err != nil {
 		return nil, err
+	}
+	if len(body) > maxOCRResponseBytes {
+		return nil, fmt.Errorf("OCR response exceeds %d bytes", maxOCRResponseBytes)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return body, fmt.Errorf("server returned %d: %s", resp.StatusCode, body)

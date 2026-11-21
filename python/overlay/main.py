@@ -1,11 +1,14 @@
 import sys
+import os
 import threading
 import requests
 from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import Qt, QRect, QTimer
+from PyQt5.QtCore import Qt, QRect, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QRegion, QPainter, QPen
 
 class SmoothOverlay(QWidget):
+    bounds_request_finished = pyqtSignal(object)
+
     def __init__(self):
         super().__init__()
         
@@ -20,7 +23,16 @@ class SmoothOverlay(QWidget):
         self.current_action = None 
         self.start_pos = None
         self.start_geometry = None
-        self.last_sent_data = {}
+        self.last_sent_data = None
+        self.request_in_flight = False
+        api_address = os.environ.get("QWQ_API_ADDR", "127.0.0.1:18743")
+        self.bounds_url = f"http://{api_address}/update-bounds"
+        self.bounds_request_finished.connect(self.handle_bounds_request_finished)
+
+        self.retry_timer = QTimer(self)
+        self.retry_timer.setSingleShot(True)
+        self.retry_timer.setInterval(1000)
+        self.retry_timer.timeout.connect(self.send_bounds_to_go)
 
         self.static_timer = QTimer(self)
         self.static_timer.setSingleShot(True)
@@ -55,17 +67,64 @@ class SmoothOverlay(QWidget):
             "height": self.height()
         }
 
-        if current_data != self.last_sent_data:
-            self.last_sent_data = current_data
-            
+        if current_data != self.last_sent_data and not self.request_in_flight:
+            self.request_in_flight = True
+
             def background_request():
                 try:
-                    response = requests.post("http://localhost:8080/update-bounds", json=current_data, timeout=1.0)
-                    print(f"DEBUG: x={current_data['x']}, y={current_data['y']} | w={current_data['width']}, h={current_data['height']} -> [SUCCESS: {response.status_code}]")
+                    response = requests.post(
+                        self.bounds_url,
+                        json=current_data,
+                        timeout=(1.0, 2.0),
+                    )
+                    self.bounds_request_finished.emit(
+                        (current_data, response.status_code, response.text, None)
+                    )
                 except requests.exceptions.RequestException as e:
-                    print(f"DEBUG: x={current_data['x']}, y={current_data['y']} | w={current_data['width']}, h={current_data['height']} -> [ERROR: Server offline]")
+                    self.bounds_request_finished.emit((current_data, None, "", str(e)))
 
             threading.Thread(target=background_request, daemon=True).start()
+
+    @pyqtSlot(object)
+    def handle_bounds_request_finished(self, result):
+        current_data, status_code, response_text, error = result
+        self.request_in_flight = False
+
+        if status_code is not None and 200 <= status_code < 300:
+            self.last_sent_data = current_data
+            print(
+                f"DEBUG: x={current_data['x']}, y={current_data['y']} | "
+                f"w={current_data['width']}, h={current_data['height']} -> [SUCCESS: {status_code}]"
+            )
+            latest_data = {
+                "x": self.x(),
+                "y": self.y(),
+                "width": self.width(),
+                "height": self.height(),
+            }
+            if latest_data != self.last_sent_data:
+                QTimer.singleShot(0, self.send_bounds_to_go)
+            return
+
+        if status_code is not None and status_code < 500:
+            self.last_sent_data = current_data
+            print(
+                f"ERROR: backend rejected bounds ({status_code}): "
+                f"{response_text.strip()}"
+            )
+            latest_data = {
+                "x": self.x(),
+                "y": self.y(),
+                "width": self.width(),
+                "height": self.height(),
+            }
+            if latest_data != self.last_sent_data:
+                QTimer.singleShot(0, self.send_bounds_to_go)
+            return
+
+        message = error or f"backend returned HTTP {status_code}"
+        print(f"ERROR: could not send capture bounds: {message}")
+        self.retry_timer.start()
 
     def get_action_region(self, pos):
         x, y = pos.x(), pos.y()

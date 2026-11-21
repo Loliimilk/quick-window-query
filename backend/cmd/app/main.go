@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -14,53 +15,73 @@ import (
 	"backend/internal/ocr"
 )
 
-const ocrServerURL = "http://127.0.0.1:8001/binary"
+const defaultOCRPort = "18744"
+
+func ocrServerURL() string {
+	port := strings.TrimSpace(os.Getenv("QWQ_OCR_PORT"))
+	if port == "" {
+		port = defaultOCRPort
+	}
+	return fmt.Sprintf("http://127.0.0.1:%s/binary", port)
+}
 
 func main() {
 	fmt.Println("QwQ: Quick Window Query started!")
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-sigCh
-		fmt.Println("shutting down...")
-		cancel()
-	}()
-
-	// Инициализируем модули
 	screenCap := capture.NewScreenCapture()
-	ocrClient := ocr.NewOCRClient(ocrServerURL)
+	ocrClient := ocr.NewOCRClient(ocrServerURL())
 	server := api.NewServer(screenCap)
 
 	frames := make(chan []byte)
-	go screenCap.StartCapture(ctx, frames)
+	acknowledgements := make(chan bool)
+	go screenCap.StartCapture(ctx, frames, acknowledgements)
 
+	serverErrors := make(chan error, 1)
 	go func() {
-		log.Println("Сервер запущен на :8080")
-		if err := server.Start(":8080"); err != nil {
-			log.Fatalf("HTTP server error: %v", err)
-		}
+		serverErrors <- server.Start()
 	}()
 
 	for {
 		select {
 		case <-ctx.Done():
+			shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			if err := server.Shutdown(shutdownCtx); err != nil {
+				log.Printf("HTTP server shutdown: %v", err)
+			}
+			cancel()
 			fmt.Println("bye bye >_<")
 			return
+		case err := <-serverErrors:
+			if err != nil {
+				log.Printf("HTTP server error: %v", err)
+			}
+			stop()
 		case frame := <-frames:
 			t0 := time.Now()
-			resp, err := ocrClient.SendFrame(ctx, frame)
-			dt := time.Since(t0)
+			server.SetProcessing(true)
+			screenCap.ClearFramePending()
+			response, err := ocrClient.SendFrame(ctx, frame)
+			if err == nil {
+				err = server.PublishOCRResult(response)
+			}
+			succeeded := err == nil
 			if err != nil {
-				fmt.Printf("send error %v:%v\n", dt, err)
-				time.Sleep(2 * time.Second)
+				screenCap.SetError(err)
+			}
+			server.SetProcessing(false)
+			select {
+			case acknowledgements <- succeeded:
+			case <-ctx.Done():
+				return
+			}
+
+			if err != nil {
+				fmt.Printf("OCR request failed after %v: %v\n", time.Since(t0), err)
 				continue
 			}
-			fmt.Printf("frame %d bytes -> %d bytes resp in %v: %s\n",
-				len(frame), len(resp), dt, string(resp))
+			fmt.Printf("OCR completed in %v: %s\n", time.Since(t0), response)
 		}
 	}
 }
