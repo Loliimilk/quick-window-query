@@ -250,11 +250,21 @@ function HardwareSummary({ hardware, checkedAt, scanState, scanMessage, onScan, 
     : t('pages.settings.hardware.unknown')
 
   return (
+    <>
     <details className="settings-hardware">
       <summary>
         <span>{t('pages.settings.hardware.title')}</span>
-        <span className="settings-hardware-preview">
-          {hardware ? `${hardware.total_ram_gib} ${t('pages.settings.gib')} ${t('pages.settings.hardware.ramShort')}` : ''}
+        <span
+          className={`settings-hardware-preview ${scanState === 'error' ? 'is-error' : ''}`}
+          role={scanState === 'error' || scanState === 'scanning' ? 'status' : undefined}
+        >
+          {scanState === 'error'
+            ? t('pages.settings.hardware.summaryError')
+            : scanState === 'scanning'
+              ? t('pages.settings.hardware.summaryScanning')
+              : hardware
+                ? `${hardware.total_ram_gib} ${t('pages.settings.gib')} ${t('pages.settings.hardware.ramShort')}`
+                : ''}
         </span>
         <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="m6 8 4 4 4-4" /></svg>
       </summary>
@@ -294,17 +304,25 @@ function HardwareSummary({ hardware, checkedAt, scanState, scanMessage, onScan, 
         ) : scanState !== 'error' && scanState !== 'scanning' ? (
           <div className="settings-hardware-state">{t('pages.settings.hardware.notChecked')}</div>
         ) : null}
-        <button
-          type="button"
-          className="settings-action-button settings-hardware-refresh"
-          disabled={scanState === 'scanning'}
-          onClick={() => onScan(true)}
-        >
-          {t(`pages.settings.hardware.${scanState === 'scanning' ? 'scanning' : 'chooseButton'}`)}
-        </button>
+        {scanState !== 'error' && (
+          <button
+            type="button"
+            className="settings-action-button settings-hardware-refresh"
+            disabled={scanState === 'scanning'}
+            onClick={() => onScan(true)}
+          >
+            {t(`pages.settings.hardware.${scanState === 'scanning' ? 'scanning' : 'chooseButton'}`)}
+          </button>
+        )}
         {scanMessage && <p className="settings-scan-message" role="status">{scanMessage}</p>}
       </div>
     </details>
+    {scanState === 'error' && (
+      <button type="button" className="settings-action-button settings-hardware-retry" onClick={() => onScan(true)}>
+        {t('pages.settings.hardware.retry')}
+      </button>
+    )}
+    </>
   )
 }
 
@@ -337,41 +355,41 @@ function LocalModelPicker({ value, hardware, checkedAt, scanState, onChange, onS
     <div className="settings-model-picker">
       <div className="settings-model-heading">
         <h2>{t('pages.settings.localModel')}</h2>
-        <p className="settings-runtime-note">{t('pages.settings.hardware.integrationNote')}</p>
+        <p className="settings-runtime-note">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" /><path d="M10 9.2v4.3m0-7.1h.01" /></svg>
+          <span>{t('pages.settings.hardware.integrationNote')}</span>
+        </p>
       </div>
-      <div className="settings-model-options">
-        <div
-          className="settings-model-list"
-          role="radiogroup"
-          aria-label={t('pages.settings.localModel')}
-          onKeyDown={handleModelKeyDown}
-        >
-          {localLlmModels.map(model => {
-            const modelFit = fits.find(item => item.value === model.value)
-            const status = modelFit?.fit ?? 'unchecked'
-            return (
-              <button
-                key={model.value}
-                type="button"
-                className={`settings-model-card ${value === model.value ? 'is-selected' : ''} is-${status}`}
-                role="radio"
-                aria-checked={value === model.value}
-                tabIndex={tabStopModel?.value === model.value ? 0 : -1}
-                ref={node => { modelButtonRefs.current[model.value] = node }}
-                onClick={() => onChange(model.value)}
-              >
-                <span className="settings-radio-mark" aria-hidden="true" />
-                <span className="settings-model-name">
-                  <strong>{model.label} <span className="settings-model-size">{model.size}</span></strong>
-                </span>
-                <span className={`settings-fit-badge is-${status}`}>
-                  {t(`pages.settings.hardware.fit.${status}`)}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-
+      <div
+        className="settings-model-list"
+        role="radiogroup"
+        aria-label={t('pages.settings.localModel')}
+        onKeyDown={handleModelKeyDown}
+      >
+        {localLlmModels.map(model => {
+          const modelFit = fits.find(item => item.value === model.value)
+          const status = modelFit?.fit ?? 'unchecked'
+          return (
+            <button
+              key={model.value}
+              type="button"
+              className={`settings-model-card ${value === model.value ? 'is-selected' : ''} is-${status}`}
+              role="radio"
+              aria-checked={value === model.value}
+              tabIndex={tabStopModel?.value === model.value ? 0 : -1}
+              ref={node => { modelButtonRefs.current[model.value] = node }}
+              onClick={() => onChange(model.value)}
+            >
+              <span className="settings-radio-mark" aria-hidden="true" />
+              <span className="settings-model-name">
+                <strong>{model.label} <span className="settings-model-size">{model.size}</span></strong>
+              </span>
+              <span className={`settings-fit-badge is-${status}`}>
+                {t(`pages.settings.hardware.fit.${status}`)}
+              </span>
+            </button>
+          )
+        })}
       </div>
       <HardwareSummary
         hardware={hardware}
@@ -527,11 +545,12 @@ function Settings() {
       <div className="settings-layout">
         <header className="settings-hero">
           <h1>{t('pages.settings.title')}</h1>
+          <p>{t('pages.settings.subtitle')}</p>
         </header>
 
         <div className="settings-workspace">
-          <div className="settings-preferences">
-            <h2 className="settings-preference-heading">{t('pages.settings.generalSection')}</h2>
+          <section className="settings-group settings-preferences" aria-labelledby="settings-general-title">
+            <h2 className="settings-group-heading" id="settings-general-title">{t('pages.settings.generalSection')}</h2>
             <SettingsPreference label={t('pages.settings.interfaceLanguage')}>
               <LanguageSelect
                 label={t('pages.settings.interfaceLanguage')}
@@ -560,8 +579,8 @@ function Settings() {
                 t={t}
               />
             </SettingsPreference>
-          </div>
-          <div className="settings-processing">
+          </section>
+          <section className="settings-group settings-processing" aria-label={t('pages.settings.localModel')}>
             <LocalModelPicker
               value={settings.localLlmModel}
               hardware={hardware}
@@ -573,18 +592,21 @@ function Settings() {
               locale={currentLanguage}
               t={t}
             />
-          </div>
+          </section>
         </div>
-        <div className="settings-cloud-account">
-          <div className="settings-cloud-copy">
-            <h2>{t('pages.settings.cloudPlans.title')}</h2>
-            <p>{t('pages.settings.cloudPlans.accountDescription')}</p>
+        <section className="settings-cloud-account" aria-labelledby="settings-cloud-title">
+          <div className="settings-cloud-information">
+            <svg className="settings-cloud-icon" viewBox="0 0 40 40" aria-hidden="true"><path d="M10.5 29.5h19a6 6 0 0 0 .2-12 10 10 0 0 0-19.2 2.1 5 5 0 0 0 0 9.9Z" /></svg>
+            <div className="settings-cloud-copy">
+              <h2 id="settings-cloud-title">{t('pages.settings.cloudPlans.title')}</h2>
+              <p>{t('pages.settings.cloudPlans.accountDescription')}</p>
+            </div>
           </div>
           <button type="button" className="settings-cloud-open" onClick={() => setCloudModalOpen(true)} aria-haspopup="dialog">
             {t('pages.settings.cloudPlans.viewPlans')}
             <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" /></svg>
           </button>
-        </div>
+        </section>
       </div>
       {cloudModalOpen && <CloudPlansModal onClose={() => setCloudModalOpen(false)} t={t} />}
     </div>
