@@ -38,34 +38,43 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
+where npm.cmd >nul 2>&1
+if errorlevel 1 (
+    echo npm.cmd was not found in PATH.
+    popd
+    pause
+    exit /b 1
+)
 if not exist "frontend\node_modules\vite\bin\vite.js" (
     echo Frontend dependencies are missing. Run scripts\setup.bat first.
     popd
     pause
     exit /b 1
 )
+echo Starting the OCR HTTP server in a new window...
 start "QwQ OCR" /D "%ROOT%" cmd /k ".venv\Scripts\python.exe -m uvicorn ocr_server:app --app-dir python\ocr_service --host 127.0.0.1 --port %QWQ_OCR_PORT%"
-echo Waiting for OCR service to start. First model loading can take a few minutes...
-powershell -NoProfile -Command "$ready = $false; for ($i = 0; $i -lt 60; $i++) { try { $response = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:%QWQ_OCR_PORT%/health/live' -TimeoutSec 2; if ($response.StatusCode -eq 200) { $ready = $true; break } } catch { }; Start-Sleep -Seconds 1 }; if (-not $ready) { exit 1 }"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\wait-for-http.ps1" -ServiceName "OCR HTTP server" -Uri "http://127.0.0.1:%QWQ_OCR_PORT%/health/live" -TimeoutSeconds 60
 if errorlevel 1 (
-    echo OCR service did not become ready. Check its window.
+    echo OCR HTTP server did not respond. Check the QwQ OCR window above for its startup error.
     popd
     pause
     exit /b 1
 )
+echo OCR HTTP server is responding. The model may still be loading; watch the QwQ OCR window.
+echo Starting the backend in a new window...
 start "QwQ Backend" /D "%ROOT%" cmd /k "go -C backend run ./cmd/app"
-echo Waiting for backend health endpoint...
-powershell -NoProfile -Command "$healthUri = 'http://%QWQ_API_ADDR%/health'; $ready = $false; for ($i = 0; $i -lt 60; $i++) { try { $response = Invoke-WebRequest -UseBasicParsing -Uri $healthUri -TimeoutSec 2; if ($response.StatusCode -eq 200) { $ready = $true; break } } catch { }; Start-Sleep -Seconds 1 }; if (-not $ready) { exit 1 }"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\wait-for-http.ps1" -ServiceName "Backend" -Uri "http://%QWQ_API_ADDR%/health" -TimeoutSeconds 60
 if errorlevel 1 (
     echo Backend did not start. Check its window.
     popd
     pause
     exit /b 1
 )
+echo Backend is responding.
+echo Starting the overlay and frontend in new windows...
 start "QwQ Overlay" /D "%ROOT%" cmd /k .venv\Scripts\python.exe python\overlay\main.py
 start "QwQ Frontend" /D "%ROOT%\frontend" cmd /k "npm.cmd run dev"
-echo Waiting for the frontend...
-powershell -NoProfile -Command "$ready = $false; for ($i = 0; $i -lt 60; $i++) { try { $response = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:%QWQ_WEB_PORT%/' -TimeoutSec 2; if ($response.StatusCode -eq 200) { $ready = $true; break } } catch { }; Start-Sleep -Seconds 1 }; if (-not $ready) { exit 1 }"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\wait-for-http.ps1" -ServiceName "Frontend" -Uri "http://127.0.0.1:%QWQ_WEB_PORT%/" -TimeoutSeconds 60
 if errorlevel 1 (
     echo Frontend did not start. Check its window.
     popd

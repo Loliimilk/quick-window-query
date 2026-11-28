@@ -2,7 +2,7 @@
   "navigation": {
     "home": "Home",
     "notes": "Notes",
-    "dictionary": "Dictionary",
+    "dictionary": "Reference",
     "settings": "Settings"
   },
   "pages": {
@@ -26,13 +26,13 @@
     },
     "settings": {
       "title": "Settings",
+      "generalSection": "General",
       "status": "Local configuration",
-      "reset": "Reset",
-      "interfaceLanguage": "Interface language",
+      "interfaceLanguage": "Language",
       "currentLanguage": "Current language",
       "russian": "Русский",
       "english": "English",
-      "translationMode": "Translation method",
+      "translationMode": "Translation",
       "translatorEngine": "Translator",
       "llmLocation": "LLM runtime",
       "localEndpoint": "Local endpoint",
@@ -42,6 +42,75 @@
       "cloudAutomaticBadge": "Auto",
       "cloudAutomatic": "Cloud mode is configured automatically.",
       "captureInterval": "Frame interval",
+      "captureMaxSpeed": "No delay",
+      "captureSeconds": "{{count}} s",
+      "secondsShort": "s",
+      "captureQuickValues": "Quick interval values",
+      "captureMaxSpeedHint": "No extra wait between recognition requests.",
+      "captureSyncError": "Saved locally, but the capture service could not be reached.",
+      "gib": "GB",
+      "hardware": {
+        "title": "Computer",
+        "chooseButton": "Auto-select",
+        "scanning": "Checking…",
+        "error": "Service unavailable. Start the app and try again.",
+        "staleData": "Showing saved details.",
+        "ram": "System memory",
+        "gpu": "Graphics card",
+        "cpu": "Processor",
+        "cores": "cores",
+        "threads": "threads",
+        "totalVram": "Total video memory",
+        "unknown": "Unknown",
+        "lastChecked": "Checked {{date}}",
+        "usable": "Memory considered: about {{value}} GB",
+        "notChecked": "No details",
+        "noModelFitsHint": "No suitable model found.",
+        "fit": {
+          "ideal": "Good fit",
+          "borderline": "50/50",
+          "insufficient": "Not suitable",
+          "unchecked": "Not checked"
+        },
+        "estimateNote": "Uses total RAM, NVIDIA memory and CPU threads. Speed is not measured.",
+        "applied": "Selected {{model}}.",
+        "scanComplete": "Check complete.",
+        "integrationNote": "Local run unavailable.",
+        "ramShort": "RAM"
+      },
+      "cloudPlans": {
+        "title": "Cloud",
+        "accountTitle": "No subscription",
+      "accountDescription": "No load on your PC.",
+        "viewPlans": "View plans",
+        "sameModel": "One model in the cloud. Plans differ by request allowance.",
+        "disclaimer": "Cloud is not available yet. Prices and limits will be announced before launch.",
+        "pricePending": "Price to be announced",
+        "commonModel": "The same cloud model",
+        "limitPending": "Exact limit to be announced",
+        "unavailable": "Not available yet",
+        "close": "Close",
+        "freeTitle": "No subscription required",
+        "freeDescription": "A subscription is only needed for cloud processing.",
+        "stayFree": "Stay on free",
+        "plans": {
+          "starter": {
+            "name": "Basic",
+            "audience": "For occasional use",
+            "volume": "A small request allowance"
+          },
+          "plus": {
+            "name": "Standard",
+            "audience": "For regular use",
+            "volume": "A larger request allowance"
+          },
+          "max": {
+            "name": "Max",
+            "audience": "For larger volumes of text",
+            "volume": "The largest request allowance"
+          }
+        }
+      },
       "captureIdleInterval": "Idle polling",
       "captureRetryInterval": "Retry delay",
       "captureSkipUnchanged": "Skip unchanged frames",
@@ -56,7 +125,7 @@
       "sections": {
         "interface": {
           "eyebrow": "App",
-          "title": "Interface"
+          "title": "Application"
         },
         "translation": {
           "eyebrow": "Text",
@@ -64,7 +133,7 @@
         },
         "llm": {
           "eyebrow": "Reasoning",
-          "title": "LLM"
+          "title": "Model"
         },
         "capture": {
           "eyebrow": "Screen",

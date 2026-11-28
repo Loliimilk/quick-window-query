@@ -22,17 +22,51 @@ type Bounds struct {
 }
 
 type ScreenCapture struct {
-	mu            sync.Mutex
-	customBounds  image.Rectangle
-	hasCustomRect bool
-	enabled       bool
-	framePending  bool
-	changed       chan struct{}
-	lastError     string
+	mu              sync.Mutex
+	customBounds    image.Rectangle
+	hasCustomRect   bool
+	enabled         bool
+	framePending    bool
+	changed         chan struct{}
+	intervalChanged chan struct{}
+	interval        time.Duration
+	lastError       string
 }
 
 func NewScreenCapture() *ScreenCapture {
-	return &ScreenCapture{changed: make(chan struct{}, 1)}
+	return &ScreenCapture{
+		changed:         make(chan struct{}, 1),
+		intervalChanged: make(chan struct{}, 1),
+		interval:        time.Second,
+	}
+}
+
+const maxCaptureIntervalSeconds = 10
+
+func (s *ScreenCapture) SetIntervalSeconds(seconds int) error {
+	if seconds < 0 || seconds > maxCaptureIntervalSeconds {
+		return fmt.Errorf("interval must be between 0 and %d seconds", maxCaptureIntervalSeconds)
+	}
+
+	s.mu.Lock()
+	interval := time.Duration(seconds) * time.Second
+	changed := s.interval != interval
+	s.interval = interval
+	s.mu.Unlock()
+
+	if changed {
+		select {
+		case s.intervalChanged <- struct{}{}:
+		default:
+		}
+	}
+	return nil
+}
+
+func (s *ScreenCapture) IntervalSeconds() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return int(s.interval / time.Second)
 }
 
 const maxCapturePixels = 34_000_000
@@ -162,6 +196,7 @@ func (s *ScreenCapture) StartCapture(ctx context.Context, frames chan<- []byte, 
 			}
 			continue
 		}
+		frameCheckStarted := time.Now()
 		if rect != lastRect {
 			hasLastHash = false
 			lastRect = rect
@@ -188,7 +223,7 @@ func (s *ScreenCapture) StartCapture(ctx context.Context, frames chan<- []byte, 
 
 		currentHash := sha256.Sum256(img.Pix)
 		if hasLastHash && currentHash == lastHash {
-			if !s.waitFor(ctx, 50*time.Millisecond) {
+			if !s.waitForCaptureInterval(ctx, frameCheckStarted) {
 				return
 			}
 			continue
@@ -222,6 +257,9 @@ func (s *ScreenCapture) StartCapture(ctx context.Context, frames chan<- []byte, 
 				lastHash = currentHash
 				hasLastHash = true
 				retryDelay = 0
+				if !s.waitForCaptureInterval(ctx, frameCheckStarted) {
+					return
+				}
 			} else {
 				if retryDelay == 0 {
 					retryDelay = 2 * time.Second
@@ -237,6 +275,48 @@ func (s *ScreenCapture) StartCapture(ctx context.Context, frames chan<- []byte, 
 			}
 		case <-ctx.Done():
 			return
+		}
+	}
+}
+
+func (s *ScreenCapture) waitForCaptureInterval(ctx context.Context, started time.Time) bool {
+	for {
+		s.mu.Lock()
+		interval := s.interval
+		s.mu.Unlock()
+
+		remaining := time.Until(started.Add(interval))
+		if remaining <= 0 {
+			return true
+		}
+
+		timer := time.NewTimer(remaining)
+		select {
+		case <-timer.C:
+			return true
+		case <-s.intervalChanged:
+			if !timer.Stop() {
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
+		case <-s.changed:
+			if !timer.Stop() {
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
+			return true
+		case <-ctx.Done():
+			if !timer.Stop() {
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
+			return false
 		}
 	}
 }

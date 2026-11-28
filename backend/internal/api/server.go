@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"backend/internal/capture"
+	"backend/internal/hardware"
 )
 
 const defaultAddress = "127.0.0.1:18743"
@@ -71,6 +72,8 @@ func (s *Server) setupRoutes() {
 	s.mux.HandleFunc("/health", s.handleHealth)
 	s.mux.HandleFunc("/update-bounds", s.handleUpdateBounds)
 	s.mux.HandleFunc("/capture", s.handleCapture)
+	s.mux.HandleFunc("/capture/settings", s.handleCaptureSettings)
+	s.mux.HandleFunc("/system-info", s.handleSystemInfo)
 	s.mux.HandleFunc("/ocr-result", s.handleOCRResult)
 }
 
@@ -138,6 +141,44 @@ func (s *Server) handleCapture(w http.ResponseWriter, r *http.Request) {
 	default:
 		methodNotAllowed(w, http.MethodGet, http.MethodPost)
 	}
+}
+
+func (s *Server) handleCaptureSettings(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		writeJSON(w, http.StatusOK, map[string]int{"interval_seconds": s.capture.IntervalSeconds()})
+	case http.MethodPost:
+		var request struct {
+			IntervalSeconds *int `json:"interval_seconds"`
+		}
+		if err := decodeJSON(w, r, &request); err != nil {
+			http.Error(w, "bad capture settings: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		if request.IntervalSeconds == nil {
+			http.Error(w, "bad capture settings: interval_seconds is required", http.StatusBadRequest)
+			return
+		}
+		if err := s.capture.SetIntervalSeconds(*request.IntervalSeconds); err != nil {
+			http.Error(w, "bad capture settings: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]int{"interval_seconds": s.capture.IntervalSeconds()})
+	default:
+		methodNotAllowed(w, http.MethodGet, http.MethodPost)
+	}
+}
+
+func (s *Server) handleSystemInfo(w http.ResponseWriter, r *http.Request) {
+	if !requireMethod(w, r, http.MethodGet) {
+		return
+	}
+	info, err := hardware.Inspect(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	writeJSON(w, http.StatusOK, info)
 }
 
 func (s *Server) handleOCRResult(w http.ResponseWriter, r *http.Request) {

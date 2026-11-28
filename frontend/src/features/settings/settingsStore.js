@@ -8,12 +8,15 @@ const defaults = {
 }
 
 const ranges = {
-  captureIntervalSeconds: [0.1, 30]
+  captureIntervalSeconds: [0, 10]
 }
+
+let captureSettingsSyncQueue = Promise.resolve()
+let captureSettingsRevision = 0
 
 const allowedValues = {
   translationMode: ['translator', 'llm'],
-  llmLocation: ['local', 'cloud'],
+  llmLocation: ['local'],
   localLlmModel: ['llama3.1', 'qwen2.5', 'gemma2']
 }
 
@@ -27,7 +30,7 @@ function clampNumber(value, fallback, range) {
   const [min, max] = range
   const clamped = Math.min(max, Math.max(min, number))
 
-  return Math.round(clamped * 10) / 10
+  return Math.round(clamped)
 }
 
 function normalizeChoice(value, fallback, options) {
@@ -35,15 +38,18 @@ function normalizeChoice(value, fallback, options) {
 }
 
 function readLegacyCaptureInterval(settings) {
+  let interval
   if (settings.captureIntervalSeconds != null) {
-    return settings.captureIntervalSeconds
+    interval = Number(settings.captureIntervalSeconds)
+  } else if (settings.captureIntervalMs != null) {
+    interval = Number(settings.captureIntervalMs) / 1000
+  } else {
+    return defaults.captureIntervalSeconds
   }
 
-  if (settings.captureIntervalMs != null) {
-    return Number(settings.captureIntervalMs) / 1000
-  }
-
-  return defaults.captureIntervalSeconds
+  // Previous releases only allowed positive sub-second values. Keep those at
+  // one second after migration; zero now has the distinct meaning “no wait”.
+  return interval > 0 && interval < 0.5 ? 1 : interval
 }
 
 export function normalizeSettings(value) {
@@ -89,6 +95,28 @@ export function writeSettings(settings) {
 export function resetSettings() {
   writeSettings(defaults)
   return defaults
+}
+
+export async function syncCaptureInterval(intervalSeconds) {
+  const revision = ++captureSettingsRevision
+  const request = captureSettingsSyncQueue.catch(() => {}).then(async () => {
+    if (revision !== captureSettingsRevision) return null
+
+    const response = await fetch('/api/capture/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ interval_seconds: intervalSeconds })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Capture settings could not be applied (${response.status})`)
+    }
+
+    return response.json()
+  })
+
+  captureSettingsSyncQueue = request.catch(() => {})
+  return request
 }
 
 export { defaults as defaultSettings, ranges as settingRanges }

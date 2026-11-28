@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import './pages/pages.css'
 
@@ -9,9 +9,15 @@ import Dictionary from './pages/dictionary/dictionary.jsx'
 import Note from './pages/note/note.jsx'
 import Settings from './pages/settings/settings.jsx'
 import { useNotes } from './features/notes/useNotes.js'
+import { readSettings, syncCaptureInterval } from './features/settings/settingsStore.js'
 
 function App() {
   const [activeTab, setActiveTab] = useState('logo')
+
+  useEffect(() => {
+    syncCaptureInterval(readSettings().captureIntervalSeconds).catch(() => {})
+  }, [])
+
   const {
     notes,
     handleAddPhraseToNotes,

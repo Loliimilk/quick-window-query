@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import './Sidebar.css'
 
+import captureIcon from '../../assets/capture.svg'
 import noteIcon from '../../assets/note.svg'
 import directoryIcon from '../../assets/directory.svg'
 import settingsIcon from '../../assets/setting.svg'
 
 const tabs = [
-  { id: 'logo', icon: null, label: 'QwQ', translationKey: 'navigation.home' },
+  { id: 'logo', icon: captureIcon, translationKey: 'navigation.home' },
   { id: 'note', icon: noteIcon, translationKey: 'navigation.notes' },
   { id: 'directory', icon: directoryIcon, translationKey: 'navigation.dictionary' },
   { id: 'settings', icon: settingsIcon, translationKey: 'navigation.settings' },

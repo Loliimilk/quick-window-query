@@ -2,7 +2,7 @@
   "navigation": {
     "home": "Главная",
     "notes": "Заметки",
-    "dictionary": "Словарь",
+    "dictionary": "Справочник",
     "settings": "Настройки"
   },
   "pages": {
@@ -26,13 +26,13 @@
     },
     "settings": {
       "title": "Настройки",
+      "generalSection": "Основное",
       "status": "Локальная конфигурация",
-      "reset": "Сбросить",
-      "interfaceLanguage": "Язык интерфейса",
+      "interfaceLanguage": "Язык",
       "currentLanguage": "Текущий язык",
       "russian": "Русский",
       "english": "English",
-      "translationMode": "Способ перевода",
+      "translationMode": "Перевод",
       "translatorEngine": "Переводчик",
       "llmLocation": "Режим модели",
       "localEndpoint": "Локальный endpoint",
@@ -42,6 +42,75 @@
       "cloudAutomaticBadge": "Авто",
       "cloudAutomatic": "В облачном режиме все настраивается автоматически.",
       "captureInterval": "Интервал снимков",
+      "captureMaxSpeed": "Без задержки",
+      "captureSeconds": "{{count}} с",
+      "secondsShort": "с",
+      "captureQuickValues": "Быстрые значения интервала",
+      "captureMaxSpeedHint": "Без дополнительной паузы между распознаваниями.",
+      "captureSyncError": "Настройка сохранена, но сервис захвата недоступен.",
+      "gib": "ГБ",
+      "hardware": {
+        "title": "Компьютер",
+        "chooseButton": "Подобрать",
+        "scanning": "Проверка…",
+        "error": "Сервис недоступен. Запустите приложение и попробуйте ещё раз.",
+        "staleData": "Показаны сохранённые данные.",
+        "ram": "Оперативная память",
+        "gpu": "Видеокарта",
+        "cpu": "Процессор",
+        "cores": "ядер",
+        "threads": "потоков",
+        "totalVram": "Видеопамять всего",
+        "unknown": "Не определено",
+        "lastChecked": "Проверено {{date}}",
+        "usable": "Объём для оценки: ~{{value}} ГБ",
+        "notChecked": "Нет данных",
+        "noModelFitsHint": "Нет подходящей модели.",
+        "fit": {
+          "ideal": "Подходит",
+          "borderline": "50/50",
+          "insufficient": "Не подходит",
+          "unchecked": "Не проверено"
+        },
+        "estimateNote": "Учитываются общий объём ОЗУ, память NVIDIA и потоки CPU. Скорость не проверялась.",
+        "applied": "Выбрана {{model}}.",
+        "scanComplete": "Проверка готова.",
+        "integrationNote": "Локальный запуск недоступен.",
+        "ramShort": "ОЗУ"
+      },
+      "cloudPlans": {
+        "title": "Облако",
+        "accountTitle": "Без подписки",
+      "accountDescription": "Не нагружает компьютер.",
+        "viewPlans": "Тарифы",
+        "sameModel": "Одна модель в облаке. Тарифы различаются лимитом запросов.",
+        "disclaimer": "Облако ещё не запущено. Цены и лимиты появятся перед запуском.",
+        "pricePending": "Цена не объявлена",
+        "commonModel": "Та же облачная модель",
+        "limitPending": "Точный лимит будет объявлен",
+        "unavailable": "Пока недоступно",
+        "close": "Закрыть",
+        "freeTitle": "Можно без подписки",
+        "freeDescription": "Подписка нужна только для облака.",
+        "stayFree": "Остаться бесплатно",
+        "plans": {
+          "starter": {
+            "name": "Эконом",
+            "audience": "Для редкого использования",
+            "volume": "Небольшой пакет запросов"
+          },
+          "plus": {
+            "name": "Стандарт",
+            "audience": "Для регулярного использования",
+            "volume": "Увеличенный пакет запросов"
+          },
+          "max": {
+            "name": "Максимум",
+            "audience": "Для большого объёма текста",
+            "volume": "Самый большой пакет запросов"
+          }
+        }
+      },
       "captureIdleInterval": "Опрос без окна",
       "captureRetryInterval": "Задержка повтора",
       "captureSkipUnchanged": "Пропускать неизмененные кадры",
@@ -56,7 +125,7 @@
       "sections": {
         "interface": {
           "eyebrow": "Приложение",
-          "title": "Интерфейс"
+          "title": "Приложение"
         },
         "translation": {
           "eyebrow": "Текст",
